@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_scada" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.scada</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="75"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="SCADA" string="SCADA &amp; PLC" name="scada_plc_connector" groups="scada_plc_connector.group_scada_admin">
+                    <block title="Keamanan &amp; Kontrol Penulisan PLC (IEC 62443 FR2/FR3)" name="scada_write_security_settings">
+                        <setting string="Global Read-Only / Kill-Switch" help="Saklar global darurat untuk seketika mematikan segala perintah tulis ke register PLC (FR-193).">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_plc_write_mode" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Profil Keamanan IEC 62443" help="Memberlakukan kontrol ketat: whitelist tag writable, validasi batas min/max, dan otentikasi API key token ber-hash SHA-256 (FR-194).">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_iec62443_profile" class="oe_inline"/>
+                                    <label for="scada_iec62443_profile" class="ms-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Topologi Pabrik &amp; Multi-Company (FR-189, FR-190)" name="scada_topology_settings">
+                        <setting string="Multi-Company" help="Aktifkan isolasi data konfigurasi mesin, gateway, dan telemetri per perusahaan dalam multi-company environment.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_enable_multi_company" class="oe_inline"/>
+                                    <label for="scada_enable_multi_company" class="ms-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Mode Lokasi / Plant" help="Pilih antara satu plant lokal atau multi-site pabrik dengan penugasan gateway per lokasi.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_location_mode" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Mesin Penyimpanan Data &amp; Kinerja (FR-191, FR-S3)" name="scada_performance_settings">
+                        <setting string="Backend Penyimpanan Histori" help="Gunakan tabel PostgreSQL standar bawaan atau aktifkan hypertable TimescaleDB jika ekstensi terpasang untuk ingest throughput tinggi.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_history_backend" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Masa Retensi Histori Telemetri" help="Jumlah hari penyimpanan data histori tag telemetri sebelum dibersihkan otomatis oleh cron job (default: 30 hari).">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="scada_retention_days" class="col-lg-5 o_light_label"/>
+                                    <field name="scada_retention_days" class="col-lg-4"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="scada_ingest_rate_limit" class="col-lg-5 o_light_label"/>
+                                    <field name="scada_ingest_rate_limit" class="col-lg-4"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_scada_config_settings" model="ir.actions.act_window">
+        <field name="name">Pengaturan SCADA</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'scada_plc_connector'}</field>
+    </record>
+</odoo>
+

@@ -1,0 +1,29 @@
+# ============================================================
+# Repo: odoo-scada-plc-connector
+# Hanya modul scada_plc_connector yang di-track oleh repo ini.
+# (22 addon lain di custom_addons/ adalah proyek terpisah)
+# ============================================================
+/*
+!/.gitignore
+!/README.md
+!/scada_plc_connector/
+
+# PRD / dokumen internal — tidak ikut publikasi
+scada_plc_connector/docs/
+
+# Artefak Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Editor & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Log & env
+*.log
+.env
