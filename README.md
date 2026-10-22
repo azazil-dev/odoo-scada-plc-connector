@@ -11,35 +11,35 @@
 
 **Connect real factory machinery to Odoo — no code required.**
 
-📖 **[Full Documentation (README lengkap)](scada_plc_connector/README.md)** → fitur, arsitektur, REST API, quick start, Driver SDK
+📖 **[Full Documentation (complete README)](scada_plc_connector/README.md)** → features, architecture, REST API, quick start, Driver SDK
 
 </div>
 
 ---
 
-## 📦 Isi Repositori
+## 📦 Repository Contents
 
-| Folder | Deskripsi |
-|--------|-----------|
-| [`scada_plc_connector/`](scada_plc_connector/) | Modul Odoo 17 CE — platform integrasi SCADA/PLC (aplikasi penuh, LGPL-3) |
+| Folder | Description |
+|--------|-------------|
+| [`scada_plc_connector/`](scada_plc_connector/) | Odoo 17 CE module — SCADA/PLC integration platform (full application, LGPL-3) |
 
-## ⚡ Ringkas
+## ⚡ At a Glance
 
-- **Protokol**: Simulator & Modbus TCP (aktif) · OPC UA, Siemens S7, MQTT/Sparkplug B (fase 2)
-- **Alur data**: `PLC → Edge Gateway → REST API Odoo → Historian + Rule Engine → MRP / Maintenance`
-- **Fitur**: manajemen gateway & API Key SHA-256, tag 8 tipe data dengan transformasi, rule engine (histeresis/debounce/ durasi minimum), alarm lifecycle, penulisan PLC aman ala IEC 62443 dengan audit append-only, historian + agregasi, RBAC 4 level, simulator bawaan tanpa PLC fisik.
+- **Protocols**: Simulator & Modbus TCP (active) · OPC UA, Siemens S7, MQTT/Sparkplug B (phase 2)
+- **Data flow**: `PLC → Edge Gateway → Odoo REST API → Historian + Rule Engine → MRP / Maintenance`
+- **Features**: gateway management & SHA-256 API Keys, 8 data types with tag transformation, rule engine (hysteresis/debounce/minimum duration), alarm lifecycle, IEC 62443-style safe PLC writes with append-only audit, historian + aggregation, 4-level RBAC, built-in simulator with no physical PLC required.
 
-## 🚀 Instalasi Cepat
+## 🚀 Quick Install
 
 ```bash
 git clone -b 17.0 git@github.com:azazil-dev/odoo-scada-plc-connector.git
-# tempatkan scada_plc_connector/ di addons path Anda, lalu install dari UI Odoo (Apps → SCADA PLC Connector)
+# place scada_plc_connector/ into your addons path, then install from the Odoo UI (Apps → SCADA PLC Connector)
 ```
 
-## 🔗 Link untuk Odoo Apps Store
+## 🔗 Link for the Odoo Apps Store
 
 ```
-ssh://git@github.com/azazil-dev/odoo-scada-plc-connector#17.0
+ssh://git@github.com:azazil-dev/odoo-scada-plc-connector#17.0
 ```
 
 ## 📜 License

@@ -19,7 +19,7 @@
                 </span>
             </div>
             <p class="mb-0 fs-6 text-light opacity-90" style="line-height: 1.6;">
-                Jadikan Odoo 17 CE sebagai pusat kendali dan telemetri mesin pabrik real-time. Hubungkan <strong>Modbus TCP, OPC UA, Siemens S7, MQTT</strong>, dan protokol industri lainnya langsung ke modul MRP, Maintenance, dan Quality tanpa coding.
+                Turn Odoo 17 CE into the real-time control and telemetry center for your factory machinery. Connect <strong>Modbus TCP, OPC UA, Siemens S7, MQTT</strong>, and other industrial protocols directly to the MRP, Maintenance, and Quality modules without writing any code.
             </p>
         </div>
     </div>
@@ -36,7 +36,7 @@
                     <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">Protocol-Agnostic</h6>
                 </div>
                 <p class="card-text text-muted small mb-0">
-                    Satu antarmuka terpadu untuk Modbus TCP, OPC UA, Siemens S7, dan MQTT dengan Extensible Python Driver SDK.
+                    A single unified interface for Modbus TCP, OPC UA, Siemens S7, and MQTT, powered by an extensible Python Driver SDK.
                 </p>
             </div>
         </div>
@@ -48,7 +48,7 @@
                     <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">&ge; 2.000 Ingest / Detik</h6>
                 </div>
                 <p class="card-text text-muted small mb-0">
-                    Throughput batch berkecepatan tinggi via REST API <code>/scada/api/v1/ingest</code> dengan ETag dynamic config sync.
+                    High-throughput batch ingestion via the <code>/scada/api/v1/ingest</code> REST API with ETag-based dynamic config sync.
                 </p>
             </div>
         </div>
@@ -60,7 +60,7 @@
                     <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">Rule &amp; Alarm Engine</h6>
                 </div>
                 <p class="card-text text-muted small mb-0">
-                    Otomatisasi work request maintenance dan alert supervisor saat suhu atau vibrasi melebihi ambang batas.
+                    Automatically raise maintenance work requests and supervisor alerts whenever temperature or vibration exceeds its threshold.
                 </p>
             </div>
         </div>
@@ -72,7 +72,7 @@
                     <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">OT-Safe &amp; Clamping</h6>
                 </div>
                 <p class="card-text text-muted small mb-0">
-                    Kontrol tulis PLC berizin ketat, safety min/max clamp, mode Read-Only global, serta jejak audit tak dapat dimanipulasi.
+                    Strictly permissioned PLC write control, safety min/max clamping, global Read-Only mode, and a tamper-proof audit trail.
                 </p>
             </div>
         </div>
@@ -84,8 +84,8 @@
     <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
         <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
             <div>
-                <h4 class="fw-bold mb-1" style="color: #0F172A;">Arsitektur Aliran Data Industri (OT &rarr; IT)</h4>
-                <p class="text-muted small mb-0">Sesuai Dokumen Spesifikasi PRD Bagian 5: Tanpa Membuka Port Masuk ke Jaringan Mesin Pabrik</p>
+                <h4 class="fw-bold mb-1" style="color: #0F172A;">Industrial Data Flow Architecture (OT &rarr; IT)</h4>
+                <p class="text-muted small mb-0">Per PRD Specification Section 5: No Inbound Ports Open to the Factory Machine Network</p>
             </div>
             <span class="badge bg-light text-dark border p-2"><i class="fa fa-cubes me-1"></i>Odoo 17 CE Architecture</span>
         </div>
@@ -96,8 +96,8 @@
                 <div class="p-3 rounded-3 h-100" style="background: #F8FAFC; border: 1px dashed #CBD5E1;">
                     <div class="mb-2"><span class="badge bg-dark text-white px-2 py-1">Layer 1: OT Field</span></div>
                     <i class="fa fa-microchip fa-2x mb-2" style="color: #0284C7;"></i>
-                    <h6 class="fw-bold mb-1" style="color: #1E293B;">Mesin &amp; PLC Pabrik</h6>
-                    <small class="text-muted d-block">Siemens S7, Modbus RTU/TCP, Omron, CNC, Sensor Suhu/RPM</small>
+                    <h6 class="fw-bold mb-1" style="color: #1E293B;">Factory Machinery &amp; PLCs</h6>
+                    <small class="text-muted d-block">Siemens S7, Modbus RTU/TCP, Omron, CNC, Temperature/RPM Sensors</small>
                 </div>
             </div>
             <!-- Arrow -->
@@ -116,7 +116,7 @@
                     <div class="mb-2"><span class="badge bg-primary text-white px-2 py-1">Layer 3: Ingest API</span></div>
                     <i class="fa fa-exchange fa-2x mb-2" style="color: #3B82F6;"></i>
                     <h6 class="fw-bold mb-1" style="color: #1E40AF;">Odoo REST Endpoints</h6>
-                    <small class="text-muted d-block">Batch Ingestion, Evaluasi Aturan Real-time, Historian Ingestion</small>
+                    <small class="text-muted d-block">Batch Ingestion, Real-time Rule Evaluation, Historian Ingestion</small>
                 </div>
             </div>
             <!-- Step 4 -->
@@ -124,8 +124,8 @@
                 <div class="p-3 rounded-3 h-100" style="background: #FAF5FF; border: 1px dashed #D8B4FE;">
                     <div class="mb-2"><span class="badge bg-info text-white px-2 py-1">Layer 4: ERP Action</span></div>
                     <i class="fa fa-dashboard fa-2x mb-2" style="color: #8B5CF6;"></i>
-                    <h6 class="fw-bold mb-1" style="color: #5B21B6;">Aksi Otomatis Odoo</h6>
-                    <small class="text-muted d-block">Output MRP (Qty Producing), Tiket Maintenance, Alarm Kritis, Telemetri Live</small>
+                    <h6 class="fw-bold mb-1" style="color: #5B21B6;">Automated Odoo Actions</h6>
+                    <small class="text-muted d-block">MRP Output (Qty Producing), Maintenance Tickets, Critical Alarms, Live Telemetry</small>
                 </div>
             </div>
         </div>
@@ -140,35 +140,35 @@
             <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
                 <div class="d-flex align-items-center mb-3">
                     <i class="fa fa-network-wired fa-lg me-2" style="color: #0284C7;"></i>
-                    <h5 class="fw-bold mb-0" style="color: #0F172A;">Konektivitas &amp; Driver Industri</h5>
+                    <h5 class="fw-bold mb-0" style="color: #0F172A;">Industrial Connectivity &amp; Drivers</h5>
                 </div>
                 <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Driver Simulator Terintegrasi (Fase 1 MVP):</strong>
-                            <span class="text-muted small d-block">Mendukung pengujian end-to-end tanpa memerlukan hardware PLC fisik dengan nilai sinus suhu, RPM, dan register R/W realistis.</span>
+                            <strong style="color: #1E293B;">Built-in Simulator Driver (Phase 1 MVP):</strong>
+                            <span class="text-muted small d-block">Supports end-to-end testing without any physical PLC hardware, using realistic sine-wave temperature, RPM, and R/W register values.</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Tombol Test Connection Interaktif:</strong>
-                            <span class="text-muted small d-block">Mengecek rute soket TCP/IP ke PLC secara instan dengan pelaporan waktu latensi (milidetik) dan indikator status live.</span>
+                            <strong style="color: #1E293B;">Interactive Test Connection Button:</strong>
+                            <span class="text-muted small d-block">Instantly checks the TCP/IP socket route to the PLC, reporting latency in milliseconds with a live status indicator.</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Wizard Import &amp; Export CSV Tag:</strong>
-                            <span class="text-muted small d-block">Tambahkan puluhan register mesin dalam sekali klik tanpa perlu menginput manual satu per satu.</span>
+                            <strong style="color: #1E293B;">CSV Tag Import &amp; Export Wizard:</strong>
+                            <span class="text-muted small d-block">Add dozens of machine registers in a single click, with no need to enter them manually one by one.</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Transformasi Nilai &amp; Formula:</strong>
-                            <span class="text-muted small d-block">Faktor scale, offset, dan ekspresi aman <code>safe_eval</code> (misal: <code>value * 0.1 - 5</code>) untuk kalibrasi sensor presisi.</span>
+                            <strong style="color: #1E293B;">Value Transformation &amp; Formulas:</strong>
+                            <span class="text-muted small d-block">Scale factor, offset, and safe <code>safe_eval</code> expressions (e.g. <code>value * 0.1 - 5</code>) for precision sensor calibration.</span>
                         </div>
                     </li>
                 </ul>
@@ -180,35 +180,35 @@
             <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
                 <div class="d-flex align-items-center mb-3">
                     <i class="fa fa-shield-halved fa-lg me-2" style="color: #059669;"></i>
-                    <h5 class="fw-bold mb-0" style="color: #0F172A;">Keamanan OT &amp; Otomasi ERP</h5>
+                    <h5 class="fw-bold mb-0" style="color: #0F172A;">OT Security &amp; ERP Automation</h5>
                 </div>
                 <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Kontrol Penulisan PLC Berlapis:</strong>
-                            <span class="text-muted small d-block">Setiap tag wajib ditandai <code>is_writable</code>, dibatasi min/max safety range, dan dilengkapi wizard konfirmasi eksplisit operator.</span>
+                            <strong style="color: #1E293B;">Layered PLC Write Control:</strong>
+                            <span class="text-muted small d-block">Every tag must be flagged <code>is_writable</code>, bounded by a min/max safety range, and backed by an explicit operator confirmation wizard.</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Alarm Otomatis Menjadi Work Request Maintenance:</strong>
-                            <span class="text-muted small d-block">Terintegrasi dengan <code>maintenance.request</code> lengkap dengan mekanisme debounce anti-duplikasi tiket.</span>
+                            <strong style="color: #1E293B;">Automatic Alarms Become Maintenance Work Requests:</strong>
+                            <span class="text-muted small d-block">Fully integrated with <code>maintenance.request</code>, including a debounce mechanism that prevents duplicate tickets.</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Pemisahan Hak Akses 4 Tingkat:</strong>
-                            <span class="text-muted small d-block">SCADA Viewer (Operator), SCADA User (Supervisor/Teknisi), SCADA Engineer (Otomasi), dan SCADA Administrator (IT).</span>
+                            <strong style="color: #1E293B;">4-Tier Access Control Separation:</strong>
+                            <span class="text-muted small d-block">SCADA Viewer (Operator), SCADA User (Supervisor/Technician), SCADA Engineer (Automation), and SCADA Administrator (IT).</span>
                         </div>
                     </li>
                     <li class="d-flex align-items-start">
                         <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
                         <div>
-                            <strong style="color: #1E293B;">Audit Log Append-Only (IEC 62443):</strong>
-                            <span class="text-muted small d-block">Merekam riwayat perintah tulis (siapa, kapan, nilai, asal perintah, dan respon PLC) yang tidak dapat diedit atau dihapus.</span>
+                            <strong style="color: #1E293B;">Append-Only Audit Log (IEC 62443):</strong>
+                            <span class="text-muted small d-block">Records the full history of write commands (who, when, value, command origin, and PLC response) that can never be edited or deleted.</span>
                         </div>
                     </li>
                 </ul>
@@ -220,7 +220,7 @@
     <!-- 5. PROTOCOL COMPATIBILITY SHOWCASE                                -->
     <!-- ================================================================= -->
     <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
-        <h5 class="fw-bold mb-3 text-center" style="color: #0F172A;">Dukungan Protokol Industri Global</h5>
+        <h5 class="fw-bold mb-3 text-center" style="color: #0F172A;">Global Industrial Protocol Support</h5>
         <div class="row g-3 text-center">
             <div class="col-6 col-md-3">
                 <div class="p-3 bg-white rounded-3 shadow-sm border">
@@ -255,10 +255,10 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
         <div class="small text-muted">
             <i class="fa fa-info-circle me-1" style="color: #0284C7;"></i>
-            Dirancang dan diuji pada <strong>Odoo 17.0 Community Edition</strong>. Kompatibel dengan arsitektur multi-worker dan PostgreSQL 14+.
+            Designed and tested on <strong>Odoo 17.0 Community Edition</strong>. Compatible with multi-worker architecture and PostgreSQL 14+.
         </div>
         <div class="small text-muted">
-            Pengembang: <strong style="color: #0F172A;">Arif N Ramadhan</strong>
+            Developer: <strong style="color: #0F172A;">Arif N Ramadhan</strong>
         </div>
     </div>
 </div>
