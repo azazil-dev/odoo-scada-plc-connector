@@ -20,70 +20,78 @@ class ScadaDriverRegistry:
 
     @classmethod
     def register(cls, driver_cls):
+        """Register a driver class keyed by its protocol identifier."""
         cls._drivers[driver_cls.protocol] = driver_cls
         return driver_cls
 
     @classmethod
     def get(cls, protocol):
+        """Return the driver class for the given protocol key, or None if not found."""
         return cls._drivers.get(protocol)
 
     @classmethod
     def available_protocols(cls):
+        """Return a list of (protocol_key, label) tuples for all registered drivers."""
         return [(k, v.label) for k, v in cls._drivers.items()]
 
 
 class ScadaBaseDriver:
-    protocol = None            # kode unik, misal 'modbus_tcp'
-    label = None               # nama tampilan
-    config_schema = {}         # skema parameter koneksi
-    address_hint = ''          # contoh format alamat
+    protocol = None        # unique protocol code, e.g. 'modbus_tcp'
+    label = None           # human-readable display name
+    config_schema = {}     # connection parameter schema
+    address_hint = ''      # example address format shown in the UI
 
     def __init__(self, connection_config=None):
         self.config = connection_config or {}
         self.is_connected = False
 
     def connect(self):
-        """Membuka koneksi ke perangkat/PLC."""
+        """Open a connection to the device / PLC."""
         raise NotImplementedError
 
     def read(self, tags):
         """
-        Membaca sekumpulan objek tag.
-        Mengembalikan dict: {tag_code: Reading(value, quality, timestamp)}
-        quality: 'good', 'bad', 'uncertain'
+        Read a collection of tag objects.
+
+        Returns:
+            dict: {tag_code: Reading(value, quality, timestamp)}
+            quality values: 'good', 'bad', 'uncertain'
         """
         raise NotImplementedError
 
     def write(self, tag, value):
         """
-        Menulis nilai ke satu tag.
-        Mengembalikan WriteResult(success=True/False, message=..., timestamp=...)
+        Write a value to a single tag.
+
+        Returns:
+            WriteResult(success=True/False, message=str, timestamp=datetime)
         """
         raise NotImplementedError
 
     def browse(self, node=None):
-        """Opsional untuk penemuan node / tag browser."""
+        """Optional: node discovery / tag browser. Returns a list of node dicts."""
         return []
 
     def close(self):
-        """Menutup koneksi."""
+        """Close the connection."""
         self.is_connected = False
 
 
 @ScadaDriverRegistry.register
 class SimulatorDriver(ScadaBaseDriver):
     """
-    Driver Simulator Bawaan (Fase 1 MVP).
-    Memungkinkan pengujian penuh tanpa memerlukan perangkat fisik.
-    Mendukung generate nilai sinus, acak, counter naik, status boolean, dan register R/W.
+    Built-in PLC Simulator (Phase 1 MVP).
+
+    Enables full pipeline testing without any physical device.
+    Supports sine-wave, random, counter, boolean status, and R/W holding register patterns.
     """
     protocol = 'simulator'
     label = 'Built-in PLC Simulator (Test & Demo)'
     address_hint = 'SIM:TEMP_01, SIM:RPM, SIM:STATUS, SIM:COUNTER, SIM:HOLDING_REG_1'
-    
+
     config_schema = {
-        'noise_level': {'type': 'float', 'default': 0.05, 'label': 'Tingkat Noise Acak'},
-        'cycle_seconds': {'type': 'int', 'default': 30, 'label': 'Periode Siklus Sinus (detik)'},
+        'noise_level': {'type': 'float', 'default': 0.05, 'label': 'Random Noise Level'},
+        'cycle_seconds': {'type': 'int', 'default': 30, 'label': 'Sine Cycle Period (seconds)'},
     }
 
     _sim_registers = {}
@@ -93,36 +101,37 @@ class SimulatorDriver(ScadaBaseDriver):
         return True, "Simulator connected successfully"
 
     def read(self, tags):
+        """Generate realistic simulated readings for each tag based on its address pattern."""
         now = datetime.now()
         results = {}
         t_sec = time.time()
-        
+
         for tag in tags:
             code = tag.code or (tag.name if hasattr(tag, 'name') else str(tag))
             address = (tag.address or '').strip().upper() if hasattr(tag, 'address') else ''
             dtype = getattr(tag, 'data_type', 'float32')
 
-            # Jika pernah ditulis, ambil nilai register simulator tersimpan
+            # If this tag has been written to, return the stored register value
             if code in self._sim_registers:
                 results[code] = Reading(value=self._sim_registers[code], quality='good', timestamp=now)
                 continue
 
-            # Pola pembacaan simulasi realistis
+            # Realistic simulation patterns per address keyword
             if 'TEMP' in address or 'SUHU' in address:
-                # Pola suhu 75.0 - 88.0 C
+                # Motor temperature pattern: 75.0 – 88.0 °C
                 base = 80.0 + 6.0 * (random.random() - 0.5)
                 val = round(base, 2)
             elif 'RPM' in address or 'SPEED' in address:
-                # Kecepatan putar motor 1400 - 1500 RPM
+                # Motor speed pattern: 1400 – 1500 RPM
                 val = round(1450.0 + random.uniform(-25.0, 25.0), 1)
             elif 'PRESS' in address or 'BAR' in address:
-                # Tekanan 4.5 - 6.2 bar
+                # Pressure pattern: 4.5 – 6.2 bar
                 val = round(5.2 + random.uniform(-0.4, 0.4), 2)
             elif 'STATUS' in address or 'RUN' in address or dtype == 'bool':
-                # Status mesin 1=Running, 0=Stop
+                # Machine running status: 1=Running, 0=Stopped
                 val = True
             elif 'COUNT' in address or 'PROD' in address or 'QTY' in address:
-                # Akumulasi hitungan produksi (berdasarkan waktu)
+                # Production counter accumulating over time
                 val = int((t_sec // 10) % 10000)
             elif 'FAULT' in address or 'ALARM' in address:
                 val = False
@@ -136,6 +145,7 @@ class SimulatorDriver(ScadaBaseDriver):
         return results
 
     def write(self, tag, value):
+        """Store the written value in the in-memory simulator register."""
         now = datetime.now()
         code = tag.code if hasattr(tag, 'code') else str(tag)
         self._sim_registers[code] = value
@@ -143,6 +153,7 @@ class SimulatorDriver(ScadaBaseDriver):
         return WriteResult(success=True, message=f"Wrote {value} to simulator tag {code}", timestamp=now)
 
     def browse(self, node=None):
+        """Return the list of available simulator tag nodes."""
         return [
             {'node_id': 'SIM:TEMP_01', 'name': 'Motor Temperature 1', 'data_type': 'float32', 'unit': '°C'},
             {'node_id': 'SIM:RPM', 'name': 'Main Spindle RPM', 'data_type': 'float32', 'unit': 'RPM'},
@@ -159,12 +170,13 @@ class SimulatorDriver(ScadaBaseDriver):
 @ScadaDriverRegistry.register
 class ModbusTcpDriver(ScadaBaseDriver):
     """
-    Modbus TCP / RTU Driver (Fase 1 MVP).
-    Mendukung Coils (0x), Discrete Inputs (1x), Input Registers (3x), Holding Registers (4x).
+    Modbus TCP / RTU Driver (Phase 1 MVP).
+
+    Supports Coils (0x), Discrete Inputs (1x), Input Registers (3x), Holding Registers (4x).
     """
     protocol = 'modbus_tcp'
     label = 'Modbus TCP / Ethernet'
-    address_hint = 'Coil: 00001, DI: 10001, IR: 30001, HR: 40001 (atau 40001:float32)'
+    address_hint = 'Coil: 00001, DI: 10001, IR: 30001, HR: 40001 (or 40001:float32)'
 
     config_schema = {
         'unit_id': {'type': 'int', 'default': 1, 'label': 'Modbus Slave/Unit ID'},
@@ -173,8 +185,10 @@ class ModbusTcpDriver(ScadaBaseDriver):
     }
 
     def connect(self):
-        # Saat library pymodbus tersedia, gunakan koneksi jaringan asli.
-        # Fallback graceful jika pymodbus belum terpasang di runtime
+        """Attempt a real TCP socket connection to validate host reachability.
+
+        Falls back gracefully if pymodbus is not installed at runtime.
+        """
         try:
             import socket
             host = self.config.get('host', 'localhost')
@@ -186,11 +200,12 @@ class ModbusTcpDriver(ScadaBaseDriver):
             self.is_connected = True
             return True, f"Connected to Modbus TCP server at {host}:{port}"
         except Exception as e:
-            # Jika running di lingkungan dev tanpa PLC fisik, sediakan fallback
+            # Graceful fallback for dev environments without a physical PLC
             _logger.warning("Modbus socket test failed to %s: %s", self.config.get('host'), e)
             return False, f"Modbus connection failed: {str(e)}"
 
     def read(self, tags):
+        """Return uncertain readings as placeholder until pymodbus integration is complete."""
         now = datetime.now()
         results = {}
         for tag in tags:
@@ -208,10 +223,10 @@ class ModbusTcpDriver(ScadaBaseDriver):
 
 @ScadaDriverRegistry.register
 class OpcUaDriver(ScadaBaseDriver):
-    """OPC UA Driver (Fase 2)."""
+    """OPC UA Driver (Phase 2)."""
     protocol = 'opcua'
     label = 'OPC UA (Open Platform Communications)'
-    address_hint = 'ns=2;s=Line1.Furnace.Temperature atau ns=2;i=1004'
+    address_hint = 'ns=2;s=Line1.Furnace.Temperature or ns=2;i=1004'
 
     def connect(self):
         return True, "OPC UA endpoint validated"
@@ -226,7 +241,7 @@ class OpcUaDriver(ScadaBaseDriver):
 
 @ScadaDriverRegistry.register
 class SiemensS7Driver(ScadaBaseDriver):
-    """Siemens S7-300/400/1200/1500 Driver (Fase 2)."""
+    """Siemens S7-300/400/1200/1500 Driver (Phase 2)."""
     protocol = 's7'
     label = 'Siemens S7 (Profinet/Ethernet)'
     address_hint = 'DB1.DBD0 (Real), DB1.DBW4 (Int), DB1.DBX0.0 (Bit), MW10, M0.0'
@@ -244,7 +259,7 @@ class SiemensS7Driver(ScadaBaseDriver):
 
 @ScadaDriverRegistry.register
 class MqttDriver(ScadaBaseDriver):
-    """MQTT / Sparkplug B Driver (Fase 2)."""
+    """MQTT / Sparkplug B Driver (Phase 2)."""
     protocol = 'mqtt'
     label = 'MQTT / Sparkplug B'
     address_hint = 'factory/line1/machine2/telemetry/temperature'
@@ -258,4 +273,3 @@ class MqttDriver(ScadaBaseDriver):
 
     def write(self, tag, value):
         return WriteResult(success=True, message="MQTT published", timestamp=datetime.now())
-

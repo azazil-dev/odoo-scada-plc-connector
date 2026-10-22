@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <!-- 1. Gateway Simulator Default -->
+        <!-- 1. Default Simulator Gateway -->
         <record id="demo_scada_gateway_main" model="scada.gateway">
-            <field name="name">Gateway Utama Pabrik (Lini Produksi A)</field>
+            <field name="name">Main Plant Gateway (Production Line A)</field>
             <field name="code">GW-PLANT-01</field>
             <field name="mode">embedded</field>
             <field name="status">online</field>
@@ -14,9 +14,9 @@
             <field name="api_key_hash">8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</field>
         </record>
 
-        <!-- 2. Koneksi Simulator & Modbus -->
+        <!-- 2. Simulator & Modbus Connections -->
         <record id="demo_scada_conn_simulator" model="scada.connection">
-            <field name="name">PLC Lini Produksi 1 (Simulator Bawaan)</field>
+            <field name="name">Production Line 1 PLC (Built-in Simulator)</field>
             <field name="code">CONN-SIM-01</field>
             <field name="gateway_id" ref="demo_scada_gateway_main"/>
             <field name="protocol">simulator</field>
@@ -29,7 +29,7 @@
         </record>
 
         <record id="demo_scada_conn_modbus" model="scada.connection">
-            <field name="name">PLC Modbus TCP CNC Wood Router</field>
+            <field name="name">Modbus TCP PLC — CNC Wood Router</field>
             <field name="code">CONN-MODBUS-02</field>
             <field name="gateway_id" ref="demo_scada_gateway_main"/>
             <field name="protocol">modbus_tcp</field>
@@ -42,26 +42,26 @@
             <field name="poll_interval_default">2.0</field>
         </record>
 
-        <!-- 3. Perangkat / Mesin -->
+        <!-- 3. Devices / Machines -->
         <record id="demo_scada_dev_cnc" model="scada.device">
-            <field name="name">Mesin CNC Wood Milling 5-Axis</field>
+            <field name="name">CNC Wood Milling Machine 5-Axis</field>
             <field name="code">MCH-CNC-01</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="state">running</field>
-            <field name="description">Mesin pembentuk komponen furniture kayu jati presisi tinggi.</field>
+            <field name="description">High-precision teak furniture component shaping machine.</field>
         </record>
 
         <record id="demo_scada_dev_dryer" model="scada.device">
-            <field name="name">Kiln Drying Chamber (Ruang Pengering Kayu)</field>
+            <field name="name">Kiln Drying Chamber (Wood Dryer)</field>
             <field name="code">MCH-KILN-02</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="state">running</field>
-            <field name="description">Pengering kayu otomatis dengan kontrol kelembaban &amp; temperatur.</field>
+            <field name="description">Automated wood dryer with humidity and temperature control.</field>
         </record>
 
-        <!-- 4. Tag Telemetri -->
+        <!-- 4. Telemetry Tags -->
         <record id="demo_tag_spindle_temp" model="scada.tag">
-            <field name="name">Suhu Spindle Motor Utama</field>
+            <field name="name">Main Spindle Motor Temperature</field>
             <field name="code">CNC_SPINDLE_TEMP</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="device_id" ref="demo_scada_dev_cnc"/>
@@ -75,7 +75,7 @@
         </record>
 
         <record id="demo_tag_spindle_rpm" model="scada.tag">
-            <field name="name">Kecepatan Putaran Spindle</field>
+            <field name="name">Spindle Rotational Speed</field>
             <field name="code">CNC_SPINDLE_RPM</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="device_id" ref="demo_scada_dev_cnc"/>
@@ -86,7 +86,7 @@
         </record>
 
         <record id="demo_tag_prod_counter" model="scada.tag">
-            <field name="name">Counter Produk Jadi (Pieces)</field>
+            <field name="name">Finished Product Counter (Pieces)</field>
             <field name="code">CNC_PROD_COUNTER</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="device_id" ref="demo_scada_dev_cnc"/>
@@ -97,7 +97,7 @@
         </record>
 
         <record id="demo_tag_kiln_temp" model="scada.tag">
-            <field name="name">Suhu Ruang Kiln Chamber</field>
+            <field name="name">Kiln Chamber Temperature</field>
             <field name="code">KILN_CHAMBER_TEMP</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="device_id" ref="demo_scada_dev_dryer"/>
@@ -111,7 +111,7 @@
         </record>
 
         <record id="demo_tag_kiln_pressure" model="scada.tag">
-            <field name="name">Tekanan Sirkulasi Udara</field>
+            <field name="name">Air Circulation Pressure</field>
             <field name="code">KILN_AIR_PRESSURE</field>
             <field name="connection_id" ref="demo_scada_conn_simulator"/>
             <field name="device_id" ref="demo_scada_dev_dryer"/>
@@ -121,7 +121,7 @@
             <field name="mode">read</field>
         </record>
 
-        <!-- 5. Nilai Terakhir (Cache scada.tag.last) -->
+        <!-- 5. Last Values (scada.tag.last cache) -->
         <record id="demo_last_spindle_temp" model="scada.tag.last">
             <field name="tag_id" ref="demo_tag_spindle_temp"/>
             <field name="value_str">82.4</field>
@@ -154,9 +154,9 @@
             <field name="timestamp" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
         </record>
 
-        <!-- 6. Rule & Alarm Otomatis -->
+        <!-- 6. Automated Rules & Alarms -->
         <record id="demo_rule_overheat" model="scada.rule">
-            <field name="name">Deteksi Overheat Spindle CNC (> 85 °C)</field>
+            <field name="name">CNC Spindle Overheat Detection (&gt; 85 °C)</field>
             <field name="tag_id" ref="demo_tag_spindle_temp"/>
             <field name="operator">gt</field>
             <field name="threshold_value">85.0</field>
@@ -168,8 +168,7 @@
         <record id="demo_action_maintenance" model="scada.action">
             <field name="rule_id" ref="demo_rule_overheat"/>
             <field name="action_type">maintenance</field>
-            <field name="maintenance_title">Pemeriksaan Sistem Pelumasan &amp; Pendingin Spindle CNC</field>
+            <field name="maintenance_title">Inspect CNC Spindle Lubrication &amp; Cooling System</field>
         </record>
     </data>
 </odoo>
-

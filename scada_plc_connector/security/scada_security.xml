@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="0">
-        <!-- Modul Category -->
+        <!-- Module Category -->
         <record id="module_category_scada_plc" model="ir.module.category">
             <field name="name">SCADA &amp; PLC Integration</field>
-            <field name="description">Manajemen integrasi koneksi mesin industri, PLC, IoT Gateway, dan pemantauan telemetri.</field>
+            <field name="description">Management of industrial machine connections, PLC, IoT Gateway integration, and telemetry monitoring.</field>
             <field name="sequence">25</field>
         </record>
 
-        <!-- 1. SCADA Viewer: Operator Produksi (Melihat status mesin & jumlah produksi live) -->
+        <!-- 1. SCADA Viewer: Production Operator (View machine status and live production counts) -->
         <record id="group_scada_viewer" model="res.groups">
             <field name="name">SCADA Viewer</field>
             <field name="category_id" ref="module_category_scada_plc"/>
             <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-            <field name="comment">Akses hanya-lihat ke dashboard mesin, nilai tag live, dan alarm aktif.</field>
+            <field name="comment">Read-only access to the machine dashboard, live tag values, and active alarms.</field>
         </record>
 
-        <!-- Pastikan semua Internal User (base.group_user) mendapatkan hak viewer secara default agar menu SCADA langsung muncul tanpa harus mode superuser -->
+        <!-- Grant all Internal Users (base.group_user) the Viewer role by default so the SCADA menu appears without needing superuser mode -->
         <record id="base.group_user" model="res.groups">
             <field name="implied_ids" eval="[(4, ref('scada_plc_connector.group_scada_viewer'))]"/>
         </record>
 
-        <!-- 2. SCADA User: Supervisor / Teknisi Maintenance (Acknowledge alarm, monitoring) -->
+        <!-- 2. SCADA User: Supervisor / Maintenance Technician (Acknowledge alarms, monitoring) -->
         <record id="group_scada_user" model="res.groups">
             <field name="name">SCADA User</field>
             <field name="category_id" ref="module_category_scada_plc"/>
             <field name="implied_ids" eval="[(4, ref('group_scada_viewer'))]"/>
-            <field name="comment">Dapat mengakui (acknowledge) alarm, melihat riwayat telemetri, dan mencatat tindakan maintenance.</field>
+            <field name="comment">Can acknowledge alarms, view telemetry history, and log maintenance actions.</field>
         </record>
 
-        <!-- 3. SCADA Engineer: Engineer Otomasi (Konfigurasi koneksi, tag, rule, write ke PLC) -->
+        <!-- 3. SCADA Engineer: Automation Engineer (Configure connections, tags, rules, write to PLC) -->
         <record id="group_scada_engineer" model="res.groups">
             <field name="name">SCADA Engineer</field>
             <field name="category_id" ref="module_category_scada_plc"/>
             <field name="implied_ids" eval="[(4, ref('group_scada_user'))]"/>
-            <field name="comment">Dapat mengonfigurasi gateway, koneksi PLC, tag, rule engine, dan mengeksekusi penulisan register.</field>
+            <field name="comment">Can configure gateways, PLC connections, tags, the rule engine, and execute register write commands.</field>
         </record>
 
-        <!-- 4. SCADA Administrator: Admin Sistem / IT (Pengaturan, API Key, Audit Log, Whitelist) -->
+        <!-- 4. SCADA Administrator: System Admin / IT (Settings, API Keys, Audit Log, Whitelist) -->
         <record id="group_scada_admin" model="res.groups">
             <field name="name">SCADA Administrator</field>
             <field name="category_id" ref="module_category_scada_plc"/>
             <field name="implied_ids" eval="[(4, ref('group_scada_engineer'))]"/>
             <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
-            <field name="comment">Akses administratif penuh, pemeliharaan API key, retensi data, pengaturan IEC 62443, dan override mode.</field>
+            <field name="comment">Full administrative access including API key management, data retention, IEC 62443 settings, and override modes.</field>
         </record>
 
-        <!-- Hubungkan Administrator Sistem (base.group_system) agar selalu memiliki akses SCADA Administrator -->
+        <!-- Ensure System Administrators (base.group_system) always have SCADA Administrator access -->
         <record id="base.group_system" model="res.groups">
             <field name="implied_ids" eval="[(4, ref('scada_plc_connector.group_scada_admin'))]"/>
         </record>
@@ -77,4 +77,3 @@
         </record>
     </data>
 </odoo>
-

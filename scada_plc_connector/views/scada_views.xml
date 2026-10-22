@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ================================================================= -->
-    <!-- WIZARD ACTIONS & VIEWS (Harus didefinisikan sebelum dipanggil di form) -->
+    <!-- WIZARD ACTIONS & VIEWS (must be defined before referenced in forms) -->
     <!-- ================================================================= -->
     <record id="view_scada_tag_import_wizard_form" model="ir.ui.view">
         <field name="name">scada.tag.import.wizard.form</field>
         <field name="model">scada.tag.import.wizard</field>
         <field name="arch" type="xml">
-            <form string="Import Tag PLC dari CSV">
+            <form string="Import PLC Tags from CSV">
                 <group>
                     <field name="connection_id"/>
                     <field name="device_id"/>
@@ -15,19 +15,19 @@
                     <field name="filename" invisible="1"/>
                 </group>
                 <p class="text-muted small">
-                    Format kolom CSV: <code>code, name, address, data_type, unit</code><br/>
-                    Contoh: <code>TEMP_01, Suhu Motor, SIM:TEMP_01, float32, °C</code>
+                    CSV column format: <code>code, name, address, data_type, unit</code><br/>
+                    Example: <code>TEMP_01, Motor Temperature, SIM:TEMP_01, float32, °C</code>
                 </p>
                 <footer>
-                    <button name="action_import" string="Mulai Import Tag" type="object" class="btn-primary"/>
-                    <button string="Batal" class="btn-secondary" special="cancel"/>
+                    <button name="action_import" string="Start Import" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_scada_tag_import_wizard" model="ir.actions.act_window">
-        <field name="name">Import Tag PLC dari CSV</field>
+        <field name="name">Import PLC Tags from CSV</field>
         <field name="res_model">scada.tag.import.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -37,9 +37,9 @@
         <field name="name">scada.tag.write.wizard.form</field>
         <field name="model">scada.tag.write.wizard</field>
         <field name="arch" type="xml">
-            <form string="Konfirmasi Penulisan Register PLC">
+            <form string="Confirm PLC Register Write">
                 <div class="alert alert-warning" role="alert">
-                    <i class="fa fa-exclamation-triangle me-1"/> <strong>Peringatan Keselamatan Industri:</strong> Perintah ini akan langsung mengubah nilai pada memori PLC fisik atau controller mesin.
+                    <i class="fa fa-exclamation-triangle me-1"/> <strong>Industrial Safety Warning:</strong> This command will directly modify the value in physical PLC memory or machine controller.
                 </div>
                 <group>
                     <field name="tag_id" readonly="1"/>
@@ -50,15 +50,15 @@
                     <field name="max_value" readonly="1"/>
                 </group>
                 <footer>
-                    <button name="action_execute_write" string="Konfirmasi &amp; Tulis ke PLC" type="object" class="btn-danger"/>
-                    <button string="Batal" class="btn-secondary" special="cancel"/>
+                    <button name="action_execute_write" string="Confirm &amp; Write to PLC" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
     </record>
 
     <record id="action_scada_tag_write_wizard" model="ir.actions.act_window">
-        <field name="name">Tulis Nilai ke PLC</field>
+        <field name="name">Write Value to PLC</field>
         <field name="res_model">scada.tag.write.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
@@ -95,28 +95,28 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama Gateway"/>
-                        <h1><field name="name" placeholder="Misal: Gateway Pabrik Lini A"/></h1>
+                        <label for="name" string="Gateway Name"/>
+                        <h1><field name="name" placeholder="e.g. Plant Line A Gateway"/></h1>
                         <span class="text-muted"><field name="code"/></span>
                     </div>
                     <group>
-                        <group string="Konfigurasi Inti">
+                        <group string="Core Configuration">
                             <field name="mode"/>
                             <field name="active_tags_count"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group string="Kesehatan &amp; Status">
+                        <group string="Health &amp; Status">
                             <field name="last_heartbeat"/>
                             <field name="version"/>
                             <field name="host_os"/>
                             <field name="buffer_queue_size"/>
                         </group>
                     </group>
-                    <group string="Kredensial Otentikasi (IEC 62443 FR1)" groups="scada_plc_connector.group_scada_admin">
-                        <field name="api_key_display" widget="CopyClipboardChar" readonly="1" placeholder="Klik 'Generate / Rotate API Key' di atas"/>
+                    <group string="Authentication Credentials (IEC 62443 FR1)" groups="scada_plc_connector.group_scada_admin">
+                        <field name="api_key_display" widget="CopyClipboardChar" readonly="1" placeholder="Click 'Generate / Rotate API Key' above"/>
                     </group>
                     <notebook>
-                        <page string="Koneksi Terhubung" name="connections">
+                        <page string="Attached Connections" name="connections">
                             <field name="connection_ids">
                                 <tree>
                                     <field name="name"/>
@@ -128,7 +128,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Log Gateway" name="logs">
+                        <page string="Gateway Logs" name="logs">
                             <field name="log_ids">
                                 <tree decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
                                     <field name="timestamp"/>
@@ -156,7 +156,7 @@
         <field name="name">scada.connection.tree</field>
         <field name="model">scada.connection</field>
         <field name="arch" type="xml">
-            <tree string="Koneksi PLC &amp; SCADA" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'">
+            <tree string="PLC &amp; SCADA Connections" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'">
                 <field name="name"/>
                 <field name="protocol"/>
                 <field name="host"/>
@@ -173,32 +173,32 @@
         <field name="name">scada.connection.form</field>
         <field name="model">scada.connection</field>
         <field name="arch" type="xml">
-            <form string="Koneksi Mesin PLC">
+            <form string="PLC Machine Connection">
                 <header>
                     <button name="action_test_connection" string="Test Connection" type="object" class="btn-success" icon="fa-bolt"/>
                     <field name="state" widget="statusbar" statusbar_visible="online,offline,error"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama Koneksi"/>
-                        <h1><field name="name" placeholder="Misal: PLC Siemens S7-1200 Mesin CNC 1"/></h1>
+                        <label for="name" string="Connection Name"/>
+                        <h1><field name="name" placeholder="e.g. Siemens S7-1200 PLC CNC Machine 1"/></h1>
                         <span class="text-muted"><field name="code"/></span>
                     </div>
                     <group>
-                        <group string="Protokol &amp; Jaringan">
+                        <group string="Protocol &amp; Network">
                             <field name="protocol"/>
                             <field name="host"/>
                             <field name="port"/>
                             <field name="gateway_id"/>
                         </group>
-                        <group string="Parameter Polling &amp; Waktu">
+                        <group string="Polling &amp; Timing Parameters">
                             <field name="poll_interval_default"/>
                             <field name="timeout"/>
                             <field name="retry_count"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
-                    <group string="Parameter Khusus Protokol">
+                    <group string="Protocol-Specific Parameters">
                         <group invisible="protocol != 'modbus_tcp'">
                             <field name="unit_id"/>
                         </group>
@@ -210,14 +210,14 @@
                             <field name="mqtt_topic_prefix"/>
                         </group>
                     </group>
-                    <group string="Status Real-time &amp; Diagnostik" col="4">
+                    <group string="Real-time Status &amp; Diagnostics" col="4">
                         <field name="latency_ms" readonly="1"/>
                         <field name="last_seen" readonly="1"/>
                         <field name="error_count" readonly="1"/>
                         <field name="last_error_message" readonly="1" invisible="not last_error_message"/>
                     </group>
                     <notebook>
-                        <page string="Daftar Tag Register" name="tags">
+                        <page string="Tag Register List" name="tags">
                             <field name="tag_ids">
                                 <tree>
                                     <field name="code"/>
@@ -231,7 +231,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Perangkat Terkait" name="devices">
+                        <page string="Related Devices" name="devices">
                             <field name="device_ids">
                                 <tree>
                                     <field name="code"/>
@@ -260,7 +260,7 @@
         <field name="name">scada.device.tree</field>
         <field name="model">scada.device</field>
         <field name="arch" type="xml">
-            <tree string="Perangkat / Mesin">
+            <tree string="Devices / Machines">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="connection_id"/>
@@ -275,28 +275,28 @@
         <field name="name">scada.device.form</field>
         <field name="model">scada.device</field>
         <field name="arch" type="xml">
-            <form string="Perangkat Mesin Pabrik">
+            <form string="Plant Machine Device">
                 <header>
                     <field name="state" widget="statusbar" statusbar_visible="running,idle,stopped,fault"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama Mesin"/>
-                        <h1><field name="name" placeholder="Misal: Mesin Pemotong CNC Jati Jepara 01"/></h1>
-                        <span class="text-muted"><field name="code" placeholder="Kode Aset / Serial"/></span>
+                        <label for="name" string="Machine Name"/>
+                        <h1><field name="name" placeholder="e.g. 5-Axis CNC Wood Router Machine 01"/></h1>
+                        <span class="text-muted"><field name="code" placeholder="Asset Code / Serial Number"/></span>
                     </div>
                     <group>
-                        <group string="Konektivitas">
+                        <group string="Connectivity">
                             <field name="connection_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
-                        <group string="Pemetaan ERP (Odoo Bridges)">
+                        <group string="ERP Mapping (Odoo Bridges)">
                             <field name="workcenter_id"/>
                             <field name="equipment_id"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Tag Mesin Ini" name="tags">
+                        <page string="Machine Tags" name="tags">
                             <field name="tag_ids">
                                 <tree>
                                     <field name="code"/>
@@ -308,7 +308,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Alarm Aktif" name="alarms">
+                        <page string="Active Alarms" name="alarms">
                             <field name="alarm_ids">
                                 <tree decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
                                     <field name="triggered_at"/>
@@ -332,7 +332,7 @@
         <field name="name">scada.tag.tree</field>
         <field name="model">scada.tag</field>
         <field name="arch" type="xml">
-            <tree string="Tag Telemetri PLC">
+            <tree string="PLC Telemetry Tags">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="connection_id"/>
@@ -352,19 +352,19 @@
         <field name="name">scada.tag.form</field>
         <field name="model">scada.tag</field>
         <field name="arch" type="xml">
-            <form string="Definisi Tag PLC">
+            <form string="PLC Tag Definition">
                 <header>
                     <button name="action_read_now" string="Read Now" type="object" class="btn-info" icon="fa-refresh"/>
                     <button name="%(action_scada_tag_write_wizard)d" string="Write to PLC" type="action" class="btn-warning" icon="fa-pencil" invisible="not is_writable"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama Tag"/>
-                        <h1><field name="name" placeholder="Misal: Suhu Bearing Motor Utama"/></h1>
-                        <span class="text-muted"><field name="code" placeholder="Kode Unik Tag"/></span>
+                        <label for="name" string="Tag Name"/>
+                        <h1><field name="name" placeholder="e.g. Main Motor Bearing Temperature"/></h1>
+                        <span class="text-muted"><field name="code" placeholder="Unique Tag Code"/></span>
                     </div>
                     <group>
-                        <group string="Lokasi Register PLC">
+                        <group string="PLC Register Location">
                             <field name="connection_id"/>
                             <field name="device_id"/>
                             <field name="address"/>
@@ -372,7 +372,7 @@
                             <field name="unit"/>
                             <field name="mode"/>
                         </group>
-                        <group string="Nilai Terkini (Live Telemetri)">
+                        <group string="Current Value (Live Telemetry)">
                             <field name="last_value" readonly="1"/>
                             <field name="last_quality" widget="badge" readonly="1"/>
                             <field name="last_updated" readonly="1"/>
@@ -380,33 +380,33 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Transformasi &amp; Perekaman" name="transform">
+                        <page string="Transformation &amp; Recording" name="transform">
                             <group>
-                                <group string="Transformasi Nilai (Formula)">
+                                <group string="Value Transformation (Formula)">
                                     <field name="scale"/>
                                     <field name="offset"/>
                                     <field name="formula" placeholder="value * 0.1"/>
                                 </group>
-                                <group string="Strategi Penyimpanan Historian">
+                                <group string="Historian Storage Strategy">
                                     <field name="record_strategy"/>
                                     <field name="deadband_value" invisible="record_strategy != 'deadband'"/>
                                     <field name="retention_days"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Kontrol Tulis PLC (IEC 62443)" name="security_write">
+                        <page string="PLC Write Control (IEC 62443)" name="security_write">
                             <group>
-                                <group string="Izin Tulis">
+                                <group string="Write Permission">
                                     <field name="is_writable"/>
                                     <field name="require_two_step_approval" invisible="not is_writable"/>
                                 </group>
-                                <group string="Batas Nilai Aman (Safety Clamp)">
+                                <group string="Safe Value Bounds (Safety Clamp)">
                                     <field name="min_write_value" invisible="not is_writable"/>
                                     <field name="max_write_value" invisible="not is_writable"/>
                                 </group>
                             </group>
                         </page>
-                        <page string="Riwayat Nilai Terbaru" name="history">
+                        <page string="Recent Value History" name="history">
                             <field name="value_ids" limit="20">
                                 <tree>
                                     <field name="timestamp"/>
@@ -423,13 +423,13 @@
     </record>
 
     <!-- ================================================================= -->
-    <!-- 5. RULE & ALARM VIEWS                                             -->
+    <!-- 5. RULE &amp; ALARM VIEWS                                         -->
     <!-- ================================================================= -->
     <record id="view_scada_rule_tree" model="ir.ui.view">
         <field name="name">scada.rule.tree</field>
         <field name="model">scada.rule</field>
         <field name="arch" type="xml">
-            <tree string="Aturan &amp; Alarm">
+            <tree string="Rules &amp; Alarms">
                 <field name="name"/>
                 <field name="tag_id"/>
                 <field name="operator"/>
@@ -444,21 +444,21 @@
         <field name="name">scada.rule.form</field>
         <field name="model">scada.rule</field>
         <field name="arch" type="xml">
-            <form string="Aturan Ambang Batas PLC">
+            <form string="PLC Threshold Rule">
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama Aturan"/>
-                        <h1><field name="name" placeholder="Misal: Alarm Suhu Tinggi Bearing Motor > 85 C"/></h1>
+                        <label for="name" string="Rule Name"/>
+                        <h1><field name="name" placeholder="e.g. Motor Bearing High Temperature Alarm > 85 °C"/></h1>
                     </div>
                     <group>
-                        <group string="Kondisi Evaluasi">
+                        <group string="Evaluation Condition">
                             <field name="tag_id"/>
                             <field name="operator"/>
                             <field name="threshold_value"/>
                             <field name="threshold_max" invisible="operator != 'range'"/>
                             <field name="severity"/>
                         </group>
-                        <group string="Stabilisasi &amp; Waktu">
+                        <group string="Stabilization &amp; Timing">
                             <field name="duration_seconds"/>
                             <field name="hysteresis"/>
                             <field name="active"/>
@@ -466,7 +466,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Aksi Otomatis yang Dijalankan" name="actions">
+                        <page string="Automated Actions" name="actions">
                             <field name="action_ids">
                                 <tree editable="bottom">
                                     <field name="action_type"/>
@@ -487,7 +487,7 @@
         <field name="name">scada.alarm.tree</field>
         <field name="model">scada.alarm</field>
         <field name="arch" type="xml">
-            <tree string="Daftar Alarm" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
+            <tree string="Alarm List" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
                 <field name="triggered_at"/>
                 <field name="name"/>
                 <field name="device_id"/>
@@ -505,7 +505,7 @@
         <field name="name">scada.alarm.form</field>
         <field name="model">scada.alarm</field>
         <field name="arch" type="xml">
-            <form string="Kejadian Alarm Mesin">
+            <form string="Machine Alarm Event">
                 <header>
                     <button name="action_acknowledge" string="Acknowledge Alarm" type="object" class="btn-warning" invisible="state != 'active'"/>
                     <button name="action_clear" string="Clear Alarm" type="object" class="btn-success" invisible="state == 'cleared'"/>
@@ -513,18 +513,18 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <label for="name" string="Nama / Deskripsi Alarm"/>
-                        <h1><field name="name" placeholder="Misal: Spindle Overheat CNC-01"/></h1>
+                        <label for="name" string="Alarm Name / Description"/>
+                        <h1><field name="name" placeholder="e.g. Spindle Overheat CNC-01"/></h1>
                     </div>
                     <group>
-                        <group string="Informasi Pemicu">
+                        <group string="Trigger Information">
                             <field name="tag_id"/>
                             <field name="device_id"/>
                             <field name="rule_id"/>
                             <field name="trigger_value"/>
                             <field name="severity" widget="badge"/>
                         </group>
-                        <group string="Waktu &amp; Penanganan">
+                        <group string="Timestamps &amp; Response">
                             <field name="triggered_at" readonly="1"/>
                             <field name="ack_at" readonly="1" invisible="not ack_at"/>
                             <field name="ack_by" readonly="1" invisible="not ack_by"/>
@@ -540,32 +540,32 @@
         <field name="name">scada.alarm.search</field>
         <field name="model">scada.alarm</field>
         <field name="arch" type="xml">
-            <search string="Pencarian Alarm">
+            <search string="Search Alarms">
                 <field name="name"/>
                 <field name="device_id"/>
                 <field name="tag_id"/>
                 <field name="rule_id"/>
                 <separator/>
-                <filter name="filter_active" string="Alarm Aktif" domain="[('state', '=', 'active')]"/>
-                <filter name="filter_ack" string="Diakui (Acknowledged)" domain="[('state', '=', 'ack')]"/>
-                <filter name="filter_danger" string="Kritis (Danger)" domain="[('severity', '=', 'danger')]"/>
+                <filter name="filter_active" string="Active Alarms" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_ack" string="Acknowledged" domain="[('state', '=', 'ack')]"/>
+                <filter name="filter_danger" string="Critical (Danger)" domain="[('severity', '=', 'danger')]"/>
                 <group expand="0" string="Group By">
-                    <filter name="group_by_device" string="Mesin / Perangkat" context="{'group_by': 'device_id'}"/>
-                    <filter name="group_by_severity" string="Tingkat Bahaya" context="{'group_by': 'severity'}"/>
-                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_device" string="Machine / Device" context="{'group_by': 'device_id'}"/>
+                    <filter name="group_by_severity" string="Severity" context="{'group_by': 'severity'}"/>
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
                 </group>
             </search>
         </field>
     </record>
 
     <!-- ================================================================= -->
-    <!-- 6. WRITE REQUEST & AUDIT LOG VIEWS                                -->
+    <!-- 6. WRITE REQUEST &amp; AUDIT LOG VIEWS                            -->
     <!-- ================================================================= -->
     <record id="view_scada_write_request_tree" model="ir.ui.view">
         <field name="name">scada.write.request.tree</field>
         <field name="model">scada.write.request</field>
         <field name="arch" type="xml">
-            <tree string="Antrean Perintah Tulis PLC" create="false" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')">
+            <tree string="PLC Write Command Queue" create="false" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')">
                 <field name="create_date"/>
                 <field name="tag_id"/>
                 <field name="requested_value"/>
@@ -581,7 +581,7 @@
         <field name="name">scada.log.tree</field>
         <field name="model">scada.log</field>
         <field name="arch" type="xml">
-            <tree string="Audit Log SCADA &amp; IEC 62443" create="false" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+            <tree string="SCADA &amp; IEC 62443 Audit Log" create="false" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
                 <field name="timestamp"/>
                 <field name="log_type" widget="badge"/>
                 <field name="level" widget="badge"/>
@@ -592,4 +592,3 @@
         </field>
     </record>
 </odoo>
-

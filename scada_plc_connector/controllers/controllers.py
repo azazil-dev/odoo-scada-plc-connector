@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 REST API Endpoints for Edge Gateway (PRD Section 5.3):
-- POST /scada/api/v1/ingest : Menerima batch pembacaan tag dari Gateway
-- GET  /scada/api/v1/config : Mengambil konfigurasi koneksi & tag aktif (dengan ETag)
-- GET  /scada/api/v1/heartbeat : Heartbeat gateway & update status
-- GET  /scada/api/v1/commands : Mengambil antrean perintah tulis pending
-- POST /scada/api/v1/commands/:id/result : Konfirmasi hasil eksekusi tulis PLC
+- POST /scada/api/v1/ingest         : Receive a batch of tag readings from the Gateway
+- GET  /scada/api/v1/config         : Retrieve active connection & tag configuration (with ETag)
+- POST /scada/api/v1/heartbeat      : Gateway heartbeat & status update
+- POST /scada/api/v1/commands       : Fetch pending write command queue
+- POST /scada/api/v1/commands/:id/result : Confirm PLC write execution result
 """
 
 from odoo import http, fields
@@ -19,7 +19,7 @@ _logger = logging.getLogger(__name__)
 class ScadaApiController(http.Controller):
 
     def _authenticate_gateway(self):
-        """Memvalidasi Header Authorization Bearer <api_key> terhadap scada.gateway."""
+        """Validate the Authorization: Bearer <api_key> header against scada.gateway records."""
         auth_header = request.httprequest.headers.get('Authorization', '')
         if not auth_header.startswith('Bearer '):
             return None
@@ -33,6 +33,7 @@ class ScadaApiController(http.Controller):
 
     @http.route('/scada/api/v1/heartbeat', type='json', auth='none', methods=['POST'], csrf=False)
     def gateway_heartbeat(self, **kwargs):
+        """Update gateway last heartbeat, version, host OS, and buffer size."""
         gateway = self._authenticate_gateway()
         if not gateway:
             return {'status': 'error', 'message': 'Unauthorized Gateway API Key'}
@@ -48,6 +49,7 @@ class ScadaApiController(http.Controller):
 
     @http.route('/scada/api/v1/config', type='http', auth='none', methods=['GET'], csrf=False)
     def get_gateway_config(self, **kwargs):
+        """Return active connection and tag configuration as JSON with ETag caching."""
         gateway = self._authenticate_gateway()
         if not gateway:
             return Response(json.dumps({'error': 'Unauthorized'}), status=401, mimetype='application/json')
@@ -80,6 +82,7 @@ class ScadaApiController(http.Controller):
         payload = json.dumps({'gateway': gateway.code, 'connections': connections_data})
         etag = hashlib.md5(payload.encode()).hexdigest()
 
+        # Return 304 Not Modified if the client already has the current config
         if request.httprequest.headers.get('If-None-Match') == etag:
             return Response(status=304)
 
@@ -89,12 +92,16 @@ class ScadaApiController(http.Controller):
 
     @http.route('/scada/api/v1/ingest', type='json', auth='none', methods=['POST'], csrf=False)
     def ingest_telemetry(self, **kwargs):
+        """
+        Receive a batch of tag readings, update last-value cache, append to historian,
+        and evaluate all active rules for each tag.
+        """
         gateway = self._authenticate_gateway()
         if not gateway:
             return {'status': 'error', 'message': 'Unauthorized'}
 
         payload = request.jsonrequest or {}
-        readings = payload.get('readings', []) # List of dict: {tag_code, value, quality, timestamp}
+        readings = payload.get('readings', [])  # list of dicts: {tag_code, value, quality, timestamp}
 
         if not readings:
             return {'status': 'ok', 'processed': 0}
@@ -112,6 +119,7 @@ class ScadaApiController(http.Controller):
             quality = r.get('quality', 'good')
             ts = r.get('timestamp') or fields.Datetime.now()
 
+            # Resolve tag from cache or DB (scoped to this gateway)
             tag = tag_cache.get(code)
             if not tag:
                 tag = tag_obj.search([('code', '=', code), ('connection_id.gateway_id', '=', gateway.id)], limit=1)
@@ -121,7 +129,7 @@ class ScadaApiController(http.Controller):
             if not tag:
                 continue
 
-            # Update Nilai Terakhir (scada.tag.last)
+            # Update last-value cache (scada.tag.last)
             last = last_obj.search([('tag_id', '=', tag.id)], limit=1)
             vals = {
                 'tag_id': tag.id,
@@ -135,7 +143,7 @@ class ScadaApiController(http.Controller):
             else:
                 last_obj.create(vals)
 
-            # Simpan histori append-only (FR-S2)
+            # Append to historian (FR-S2)
             val_obj.create({
                 'tag_id': tag.id,
                 'value_str': str(val),
@@ -144,7 +152,7 @@ class ScadaApiController(http.Controller):
                 'timestamp': ts,
             })
 
-            # Evaluasi Rules terkait tag
+            # Evaluate all active rules linked to this tag
             rules = rule_obj.search([('tag_id', '=', tag.id), ('active', '=', True)])
             for rule in rules:
                 rule.evaluate(val)
@@ -155,7 +163,7 @@ class ScadaApiController(http.Controller):
 
     @http.route('/scada/api/v1/commands', type='json', auth='none', methods=['POST'], csrf=False)
     def fetch_pending_commands(self, **kwargs):
-        """Gateway polling perintah tulis pending."""
+        """Return pending write commands for this gateway and mark them as sent."""
         gateway = self._authenticate_gateway()
         if not gateway:
             return {'status': 'error', 'message': 'Unauthorized'}

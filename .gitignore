@@ -16,6 +16,10 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 
+# Artefak tooling AI (opencode)
+skills-lock.json
+.agents/
+
 # Editor & OS
 .vscode/
 .idea/

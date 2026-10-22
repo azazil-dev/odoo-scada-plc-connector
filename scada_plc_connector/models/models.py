@@ -38,36 +38,37 @@ class ScadaGateway(models.Model):
     _description = 'Edge IoT / SCADA Gateway'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string="Nama Gateway", required=True, tracking=True)
-    code = fields.Char(string="Kode Unik", required=True, copy=False, default=lambda self: 'GW-' + secrets.token_hex(4).upper())
+    name = fields.Char(string="Gateway Name", required=True, tracking=True)
+    code = fields.Char(string="Unique Code", required=True, copy=False, default=lambda self: 'GW-' + secrets.token_hex(4).upper())
     mode = fields.Selection([
         ('gateway', 'Remote Edge Gateway (REST/JSON Service)'),
         ('embedded', 'Embedded Odoo Worker (Local Driver Polling)'),
-    ], string="Mode Operasi", default='gateway', required=True, tracking=True)
-    
+    ], string="Operating Mode", default='gateway', required=True, tracking=True)
+
     status = fields.Selection([
         ('online', 'Online'),
         ('offline', 'Offline'),
         ('warning', 'Degraded / Warning'),
-    ], string="Status Gateway", default='offline', compute='_compute_status', store=True, tracking=True)
+    ], string="Gateway Status", default='offline', compute='_compute_status', store=True, tracking=True)
 
     api_key_hash = fields.Char(string="API Key Hash", copy=False, readonly=True)
-    api_key_display = fields.Char(string="API Key (Salin Sekarang)", copy=False, readonly=True,
-                                  help="Kunci otentikasi rahasia untuk Gateway. Hanya ditampilkan sekali saat dibuat.")
-    
-    last_heartbeat = fields.Datetime(string="Heartbeat Terakhir", readonly=True)
-    version = fields.Char(string="Versi Gateway", readonly=True)
-    host_os = fields.Char(string="Sistem Operasi / Host", readonly=True)
-    active_tags_count = fields.Integer(string="Tag Aktif", compute='_compute_tag_stats')
-    buffer_queue_size = fields.Integer(string="Buffer Store-and-Forward", default=0, readonly=True)
-    active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string="Perusahaan", default=lambda self: self.env.company)
+    api_key_display = fields.Char(string="API Key (Copy Now)", copy=False, readonly=True,
+                                  help="Secret authentication key for the Gateway. Displayed only once upon generation.")
 
-    connection_ids = fields.One2many('scada.connection', 'gateway_id', string="Koneksi Terhubung")
-    log_ids = fields.One2many('scada.log', 'gateway_id', string="Log Gateway")
+    last_heartbeat = fields.Datetime(string="Last Heartbeat", readonly=True)
+    version = fields.Char(string="Gateway Version", readonly=True)
+    host_os = fields.Char(string="Host OS", readonly=True)
+    active_tags_count = fields.Integer(string="Active Tags", compute='_compute_tag_stats')
+    buffer_queue_size = fields.Integer(string="Store-and-Forward Buffer", default=0, readonly=True)
+    active = fields.Boolean(default=True)
+    company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
+
+    connection_ids = fields.One2many('scada.connection', 'gateway_id', string="Attached Connections")
+    log_ids = fields.One2many('scada.log', 'gateway_id', string="Gateway Logs")
 
     @api.depends('last_heartbeat')
     def _compute_status(self):
+        """Derive gateway status from last heartbeat timestamp and buffer size."""
         now = fields.Datetime.now()
         for rec in self:
             if not rec.last_heartbeat:
@@ -80,6 +81,7 @@ class ScadaGateway(models.Model):
                 rec.status = 'online'
 
     def _compute_tag_stats(self):
+        """Count active tags across all connections belonging to this gateway."""
         for rec in self:
             tags = self.env['scada.tag'].search_count([
                 ('connection_id.gateway_id', '=', rec.id),
@@ -88,7 +90,7 @@ class ScadaGateway(models.Model):
             rec.active_tags_count = tags
 
     def action_generate_api_key(self):
-        """Menghasilkan API Key baru dan menyimpannya dalam bentuk SHA-256 hash."""
+        """Generate a new API Key and store it as a SHA-256 hash (FR-G2)."""
         self.ensure_one()
         raw_key = 'scada_gw_' + secrets.token_urlsafe(32)
         key_hash = hashlib.sha256(raw_key.encode()).hexdigest()
@@ -99,15 +101,15 @@ class ScadaGateway(models.Model):
         self.env['scada.log'].create({
             'log_type': 'security',
             'level': 'warning',
-            'message': f"API Key di-generate ulang untuk gateway '{self.name}'.",
+            'message': f"API Key regenerated for gateway '{self.name}'.",
             'gateway_id': self.id,
         })
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('API Key Berhasil Dibuat'),
-                'message': _('Harap segera salin API Key: %s. Nilai ini tidak akan disimpan dalam teks mentah.') % raw_key,
+                'title': _('API Key Generated'),
+                'message': _('Copy the API Key now: %s. This value will not be stored in plain text.') % raw_key,
                 'type': 'warning',
                 'sticky': True,
             }
@@ -119,29 +121,29 @@ class ScadaGateway(models.Model):
 # =============================================================================
 class ScadaConnection(models.Model):
     _name = 'scada.connection'
-    _description = 'Koneksi PLC / SCADA'
+    _description = 'PLC / SCADA Connection'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string="Nama Koneksi", required=True, tracking=True)
-    code = fields.Char(string="Kode Unik", required=True, copy=False, default=lambda self: 'CONN-' + secrets.token_hex(3).upper())
-    gateway_id = fields.Many2one('scada.gateway', string="Gateway Penanggung Jawab", required=True, tracking=True)
-    
+    name = fields.Char(string="Connection Name", required=True, tracking=True)
+    code = fields.Char(string="Unique Code", required=True, copy=False, default=lambda self: 'CONN-' + secrets.token_hex(3).upper())
+    gateway_id = fields.Many2one('scada.gateway', string="Responsible Gateway", required=True, tracking=True)
+
     protocol = fields.Selection([
         ('simulator', 'Built-in PLC Simulator'),
         ('modbus_tcp', 'Modbus TCP / Ethernet'),
         ('opcua', 'OPC UA'),
         ('s7', 'Siemens S7 (Profinet)'),
         ('mqtt', 'MQTT / Sparkplug B'),
-    ], string="Protokol Industri", default='simulator', required=True, tracking=True)
+    ], string="Industrial Protocol", default='simulator', required=True, tracking=True)
 
     host = fields.Char(string="Host / IP Address / Broker", default="127.0.0.1", required=True)
     port = fields.Integer(string="Port", default=502, required=True)
-    timeout = fields.Float(string="Timeout (detik)", default=3.0)
-    retry_count = fields.Integer(string="Maksimum Retry", default=3)
-    poll_interval_default = fields.Float(string="Interval Polling Default (detik)", default=1.0)
-    
-    # Parameter Tambahan berbasis Protokol (Disimpan dalam JSON terenkripsi/aman)
-    protocol_params = fields.Text(string="Parameter Khusus (JSON)", default="{}")
+    timeout = fields.Float(string="Timeout (seconds)", default=3.0)
+    retry_count = fields.Integer(string="Max Retries", default=3)
+    poll_interval_default = fields.Float(string="Default Poll Interval (seconds)", default=1.0)
+
+    # Protocol-specific parameters (stored as JSON)
+    protocol_params = fields.Text(string="Custom Parameters (JSON)", default="{}")
     unit_id = fields.Integer(string="Modbus Slave/Unit ID", default=1)
     s7_rack = fields.Integer(string="S7 Rack", default=0)
     s7_slot = fields.Integer(string="S7 Slot", default=1)
@@ -151,25 +153,25 @@ class ScadaConnection(models.Model):
         ('online', 'Online'),
         ('offline', 'Offline'),
         ('error', 'Error'),
-    ], string="Status Koneksi", default='offline', tracking=True)
+    ], string="Connection Status", default='offline', tracking=True)
 
-    last_seen = fields.Datetime(string="Terakhir Aktif", readonly=True)
-    latency_ms = fields.Float(string="Latensi (ms)", default=0.0, readonly=True)
-    error_count = fields.Integer(string="Total Error", default=0, readonly=True)
-    last_error_message = fields.Text(string="Pesan Error Terakhir", readonly=True)
-    
+    last_seen = fields.Datetime(string="Last Active", readonly=True)
+    latency_ms = fields.Float(string="Latency (ms)", default=0.0, readonly=True)
+    error_count = fields.Integer(string="Total Errors", default=0, readonly=True)
+    last_error_message = fields.Text(string="Last Error Message", readonly=True)
+
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string="Perusahaan", default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
 
-    device_ids = fields.One2many('scada.device', 'connection_id', string="Perangkat / Mesin")
-    tag_ids = fields.One2many('scada.tag', 'connection_id', string="Daftar Tag")
+    device_ids = fields.One2many('scada.device', 'connection_id', string="Devices / Machines")
+    tag_ids = fields.One2many('scada.tag', 'connection_id', string="Tag List")
 
     def action_test_connection(self):
-        """FR-C3: Menjalankan tes koneksi langsung lewat driver (baik lokal maupun via driver registry)."""
+        """FR-C3: Run a live connection test through the driver registry (local or remote)."""
         self.ensure_one()
         driver_cls = ScadaDriverRegistry.get(self.protocol)
         if not driver_cls:
-            raise UserError(_("Driver untuk protokol '%s' tidak ditemukan.") % self.protocol)
+            raise UserError(_("No driver found for protocol '%s'.") % self.protocol)
 
         cfg = {
             'host': self.host,
@@ -194,15 +196,15 @@ class ScadaConnection(models.Model):
                 self.env['scada.log'].create({
                     'log_type': 'connection',
                     'level': 'info',
-                    'message': f"Tes koneksi '{self.name}' BERHASIL: {msg} ({elapsed_ms:.1f} ms)",
+                    'message': f"Connection test '{self.name}' SUCCEEDED: {msg} ({elapsed_ms:.1f} ms)",
                     'connection_id': self.id,
                 })
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
-                        'title': _('Koneksi Berhasil!'),
-                        'message': _("%s (Latensi: %.1f ms)") % (msg, elapsed_ms),
+                        'title': _('Connection Successful'),
+                        'message': _("%s (Latency: %.1f ms)") % (msg, elapsed_ms),
                         'type': 'success',
                         'sticky': False,
                     }
@@ -217,7 +219,7 @@ class ScadaConnection(models.Model):
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
-                        'title': _('Koneksi Gagal'),
+                        'title': _('Connection Failed'),
                         'message': msg,
                         'type': 'danger',
                         'sticky': True,
@@ -233,7 +235,7 @@ class ScadaConnection(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _('Error Tes Koneksi'),
+                    'title': _('Connection Test Error'),
                     'message': str(e),
                     'type': 'danger',
                     'sticky': True,
@@ -242,34 +244,34 @@ class ScadaConnection(models.Model):
 
 
 # =============================================================================
-# 3. DEVICE / MESIN (scada.device)
+# 3. DEVICE / MACHINE (scada.device)
 # =============================================================================
 class ScadaDevice(models.Model):
     _name = 'scada.device'
-    _description = 'Perangkat / Mesin Pabrik'
+    _description = 'Plant Device / Machine'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string="Nama Perangkat / Mesin", required=True, tracking=True)
-    code = fields.Char(string="Nomor Aset / Kode", required=True, copy=False)
-    connection_id = fields.Many2one('scada.connection', string="Koneksi Utama", required=True, tracking=True)
-    description = fields.Text(string="Deskripsi / Lokasi")
+    name = fields.Char(string="Device / Machine Name", required=True, tracking=True)
+    code = fields.Char(string="Asset Number / Code", required=True, copy=False)
+    connection_id = fields.Many2one('scada.connection', string="Primary Connection", required=True, tracking=True)
+    description = fields.Text(string="Description / Location")
 
-    # Integrasi ke Work Center & Maintenance Equipment (FR-D2)
-    workcenter_id = fields.Many2one('mrp.workcenter', string="Work Center Terkait (MRP)", tracking=True)
-    equipment_id = fields.Many2one('maintenance.equipment', string="Equipment Terkait (Maintenance)", tracking=True)
+    # Integration with Work Center & Maintenance Equipment (FR-D2)
+    workcenter_id = fields.Many2one('mrp.workcenter', string="Related Work Center (MRP)", tracking=True)
+    equipment_id = fields.Many2one('maintenance.equipment', string="Related Equipment (Maintenance)", tracking=True)
 
     state = fields.Selection([
-        ('running', 'Running / Beroperasi'),
-        ('idle', 'Idle / Menunggu'),
-        ('stopped', 'Stopped / Berhenti'),
-        ('fault', 'Fault / Gangguan Mesin'),
-    ], string="Status Mesin", default='running', tracking=True)
+        ('running', 'Running'),
+        ('idle', 'Idle'),
+        ('stopped', 'Stopped'),
+        ('fault', 'Fault'),
+    ], string="Machine Status", default='running', tracking=True)
 
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string="Perusahaan", default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
 
-    tag_ids = fields.One2many('scada.tag', 'device_id', string="Daftar Tag Mesin")
-    alarm_ids = fields.One2many('scada.alarm', 'device_id', string="Alarm Aktif")
+    tag_ids = fields.One2many('scada.tag', 'device_id', string="Machine Tag List")
+    alarm_ids = fields.One2many('scada.alarm', 'device_id', string="Active Alarms")
 
 
 # =============================================================================
@@ -277,18 +279,18 @@ class ScadaDevice(models.Model):
 # =============================================================================
 class ScadaTag(models.Model):
     _name = 'scada.tag'
-    _description = 'Definisi Tag PLC / SCADA'
+    _description = 'PLC / SCADA Tag Definition'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'display_name'
 
-    name = fields.Char(string="Nama Tag", required=True, tracking=True)
-    code = fields.Char(string="Kode Tag Unik", required=True, copy=False, tracking=True)
-    display_name = fields.Char(string="Nama Tampilan", compute='_compute_display_name', store=True)
-    
-    connection_id = fields.Many2one('scada.connection', string="Koneksi", required=True, ondelete='cascade')
-    device_id = fields.Many2one('scada.device', string="Perangkat / Mesin Terkait", ondelete='set null')
-    
-    address = fields.Char(string="Alamat Register / Topik", required=True, help="Contoh: 40001, DB1.DBD0, SIM:TEMP_01, ns=2;s=Temperature")
+    name = fields.Char(string="Tag Name", required=True, tracking=True)
+    code = fields.Char(string="Unique Tag Code", required=True, copy=False, tracking=True)
+    display_name = fields.Char(string="Display Name", compute='_compute_display_name', store=True)
+
+    connection_id = fields.Many2one('scada.connection', string="Connection", required=True, ondelete='cascade')
+    device_id = fields.Many2one('scada.device', string="Related Device / Machine", ondelete='set null')
+
+    address = fields.Char(string="Register Address / Topic", required=True, help="Examples: 40001, DB1.DBD0, SIM:TEMP_01, ns=2;s=Temperature")
     data_type = fields.Selection([
         ('bool', 'Boolean (Bit / Coil)'),
         ('int16', 'Integer 16-Bit'),
@@ -297,65 +299,67 @@ class ScadaTag(models.Model):
         ('uint32', 'Unsigned Integer 32-Bit'),
         ('float32', 'Float 32-Bit (IEEE 754)'),
         ('float64', 'Double 64-Bit'),
-        ('string', 'String / Karakter ASCII'),
-    ], string="Tipe Data", default='float32', required=True)
+        ('string', 'String / ASCII'),
+    ], string="Data Type", default='float32', required=True)
 
     mode = fields.Selection([
-        ('read', 'Read-Only (Hanya Baca)'),
-        ('write', 'Write-Only (Hanya Tulis)'),
-        ('read_write', 'Read / Write (Baca & Tulis)'),
-    ], string="Mode Akses", default='read', required=True)
+        ('read', 'Read-Only'),
+        ('write', 'Write-Only'),
+        ('read_write', 'Read / Write'),
+    ], string="Access Mode", default='read', required=True)
 
-    unit = fields.Char(string="Satuan Unit", help="Contoh: °C, bar, RPM, pcs, A, V, kW")
-    description = fields.Text(string="Keterangan")
+    unit = fields.Char(string="Unit", help="Examples: °C, bar, RPM, pcs, A, V, kW")
+    description = fields.Text(string="Description")
 
-    # Transformasi Nilai (FR-T2)
-    scale = fields.Float(string="Scale (Faktor Pengali)", default=1.0)
-    offset = fields.Float(string="Offset (Pelecut)", default=0.0)
-    formula = fields.Char(string="Formula Kustom", help="Ekspresi safe_eval. Contoh: value * 0.1 - 5.0")
+    # Value transformation (FR-T2)
+    scale = fields.Float(string="Scale (Multiplier)", default=1.0)
+    offset = fields.Float(string="Offset (Shift)", default=0.0)
+    formula = fields.Char(string="Custom Formula", help="safe_eval expression. Example: value * 0.1 - 5.0")
 
-    # Strategi Perekaman (FR-T3)
+    # Recording strategy (FR-T3)
     record_strategy = fields.Selection([
-        ('periodic', 'Periodik Sesuai Interval'),
-        ('on_change', 'On-Change (Hanya Bila Berubah)'),
-        ('deadband', 'Deadband Toleransi Perubahan'),
-    ], string="Strategi Simpan Histori", default='on_change')
-    deadband_value = fields.Float(string="Batas Deadband", default=0.5)
+        ('periodic', 'Periodic (Fixed Interval)'),
+        ('on_change', 'On-Change (Record Only When Changed)'),
+        ('deadband', 'Deadband (Change Tolerance)'),
+    ], string="History Recording Strategy", default='on_change')
+    deadband_value = fields.Float(string="Deadband Threshold", default=0.5)
 
-    poll_interval = fields.Float(string="Interval Polling (detik)", default=0.0, help="Isi 0 untuk mengikuti default koneksi")
-    retention_days = fields.Integer(string="Retensi Histori (Hari)", default=30)
+    poll_interval = fields.Float(string="Poll Interval (seconds)", default=0.0, help="Set to 0 to inherit the connection default")
+    retention_days = fields.Integer(string="History Retention (Days)", default=30)
 
-    # Kontrol Keamanan Tulis PLC (IEC 62443 / FR-A3)
-    is_writable = fields.Boolean(string="Izinkan Penulisan ke PLC", default=False, tracking=True)
-    min_write_value = fields.Float(string="Nilai Tulis Minimum", default=0.0)
-    max_write_value = fields.Float(string="Nilai Tulis Maksimum", default=100.0)
-    require_two_step_approval = fields.Boolean(string="Wajib Persetujuan 2 Langkah (Kritis)", default=False)
+    # PLC write security controls (IEC 62443 / FR-A3)
+    is_writable = fields.Boolean(string="Allow PLC Write", default=False, tracking=True)
+    min_write_value = fields.Float(string="Min Write Value", default=0.0)
+    max_write_value = fields.Float(string="Max Write Value", default=100.0)
+    require_two_step_approval = fields.Boolean(string="Require Two-Step Approval (Critical)", default=False)
 
-    # Cache Nilai Terakhir (FR-S1)
-    last_value = fields.Char(string="Nilai Terakhir", compute='_compute_last_reading', store=False)
+    # Last value cache (FR-S1)
+    last_value = fields.Char(string="Last Value", compute='_compute_last_reading', store=False)
     last_quality = fields.Selection([
-        ('good', 'Good (Valid)'),
-        ('bad', 'Bad (Invalid / Error)'),
+        ('good', 'Good'),
+        ('bad', 'Bad'),
         ('uncertain', 'Uncertain'),
-    ], string="Kualitas", compute='_compute_last_reading', store=False)
-    last_updated = fields.Datetime(string="Waktu Pembaruan", compute='_compute_last_reading', store=False)
+    ], string="Quality", compute='_compute_last_reading', store=False)
+    last_updated = fields.Datetime(string="Last Updated", compute='_compute_last_reading', store=False)
 
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string="Perusahaan", default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
 
-    value_ids = fields.One2many('scada.tag.value', 'tag_id', string="Histori Nilai")
+    value_ids = fields.One2many('scada.tag.value', 'tag_id', string="Value History")
 
     _sql_constraints = [
-        ('code_unique', 'unique(code, company_id)', 'Kode Tag harus unik per perusahaan!'),
+        ('code_unique', 'unique(code, company_id)', 'Tag code must be unique per company!'),
     ]
 
     @api.depends('name', 'code', 'connection_id')
     def _compute_display_name(self):
+        """Build a human-readable display name including code and connection."""
         for rec in self:
             conn_name = rec.connection_id.name if rec.connection_id else '-'
             rec.display_name = f"[{rec.code}] {rec.name} ({conn_name})"
 
     def _compute_last_reading(self):
+        """Populate last value, quality, and timestamp from scada.tag.last cache."""
         for rec in self:
             last = self.env['scada.tag.last'].search([('tag_id', '=', rec.id)], limit=1)
             rec.last_value = last.value_str if last else '-'
@@ -363,19 +367,19 @@ class ScadaTag(models.Model):
             rec.last_updated = last.timestamp if last else False
 
     def action_read_now(self):
-        """FR-T8: Baca nilai langsung dari simulator / driver untuk debugging."""
+        """FR-T8: Read the current value directly from the driver for debugging purposes."""
         self.ensure_one()
         driver_cls = ScadaDriverRegistry.get(self.connection_id.protocol)
         if not driver_cls:
-            raise UserError(_("Driver untuk protokol '%s' tidak tersedia.") % self.connection_id.protocol)
+            raise UserError(_("Driver for protocol '%s' is not available.") % self.connection_id.protocol)
 
         driver = driver_cls()
         driver.connect()
         readings = driver.read([self])
         reading = readings.get(self.code)
-        
+
         if reading:
-            # Terapkan transformasi nilai
+            # Apply value transformation
             val = reading.value
             if isinstance(val, (int, float)):
                 val = (val * self.scale) + self.offset
@@ -385,7 +389,7 @@ class ScadaTag(models.Model):
                     except Exception as e:
                         _logger.warning("Formula eval failed for tag %s: %s", self.code, e)
 
-            # Update ke scada.tag.last
+            # Update scada.tag.last cache
             last_model = self.env['scada.tag.last'].search([('tag_id', '=', self.id)], limit=1)
             vals = {
                 'tag_id': self.id,
@@ -403,8 +407,8 @@ class ScadaTag(models.Model):
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': _("Pembacaan Tag Berhasil"),
-                    'message': _("Tag [%s] Nilai: %s %s (Kualitas: %s)") % (self.code, str(val), self.unit or '', reading.quality),
+                    'title': _("Tag Read Successful"),
+                    'message': _("Tag [%s] Value: %s %s (Quality: %s)") % (self.code, str(val), self.unit or '', reading.quality),
                     'type': 'info',
                     'sticky': False,
                 }
@@ -416,56 +420,56 @@ class ScadaTag(models.Model):
 # =============================================================================
 class ScadaTagLast(models.Model):
     _name = 'scada.tag.last'
-    _description = 'Nilai Terakhir Tag PLC'
+    _description = 'PLC Tag Last Value'
     _rec_name = 'tag_id'
 
     tag_id = fields.Many2one('scada.tag', string="Tag", required=True, ondelete='cascade', index=True)
-    value_str = fields.Char(string="Nilai (String)", required=True)
-    value_num = fields.Float(string="Nilai Numerik", index=True)
+    value_str = fields.Char(string="Value (String)", required=True)
+    value_num = fields.Float(string="Numeric Value", index=True)
     quality = fields.Selection([
         ('good', 'Good'),
         ('bad', 'Bad'),
         ('uncertain', 'Uncertain'),
-    ], string="Kualitas", default='good', required=True)
-    timestamp = fields.Datetime(string="Timestamp Sumber", required=True, default=fields.Datetime.now)
+    ], string="Quality", default='good', required=True)
+    timestamp = fields.Datetime(string="Source Timestamp", required=True, default=fields.Datetime.now)
 
     _sql_constraints = [
-        ('tag_id_unique', 'unique(tag_id)', 'Setiap tag hanya memiliki satu baris nilai terakhir!'),
+        ('tag_id_unique', 'unique(tag_id)', 'Each tag can have only one last-value row!'),
     ]
 
 
 class ScadaTagValue(models.Model):
     _name = 'scada.tag.value'
-    _description = 'Histori Nilai Tag PLC (Append-Only Historian)'
+    _description = 'PLC Tag Value History (Append-Only Historian)'
     _order = 'timestamp desc, id desc'
 
     tag_id = fields.Many2one('scada.tag', string="Tag", required=True, ondelete='cascade', index=True)
-    value_num = fields.Float(string="Nilai Numerik", index=True)
-    value_str = fields.Char(string="Nilai Teks")
+    value_num = fields.Float(string="Numeric Value", index=True)
+    value_str = fields.Char(string="Text Value")
     quality = fields.Selection([
         ('good', 'Good'),
         ('bad', 'Bad'),
         ('uncertain', 'Uncertain'),
-    ], string="Kualitas", default='good', required=True)
-    timestamp = fields.Datetime(string="Timestamp Sumber", required=True, index=True)
-    received_at = fields.Datetime(string="Timestamp Terima di Odoo", default=fields.Datetime.now)
+    ], string="Quality", default='good', required=True)
+    timestamp = fields.Datetime(string="Source Timestamp", required=True, index=True)
+    received_at = fields.Datetime(string="Received at Odoo", default=fields.Datetime.now)
 
 
 class ScadaTagAggregate(models.Model):
     _name = 'scada.tag.aggregate'
-    _description = 'Agregasi Historian Tag (Per Jam / Harian)'
+    _description = 'Tag Historian Aggregation (Hourly / Daily)'
     _order = 'bucket_start desc'
 
     tag_id = fields.Many2one('scada.tag', string="Tag", required=True, ondelete='cascade', index=True)
     bucket_type = fields.Selection([
-        ('hour', 'Per Jam'),
-        ('day', 'Per Hari'),
-    ], string="Tipe Agregasi", required=True, default='hour')
-    bucket_start = fields.Datetime(string="Awal Periode", required=True, index=True)
-    avg_value = fields.Float(string="Rata-rata")
-    min_value = fields.Float(string="Nilai Minimum")
-    max_value = fields.Float(string="Nilai Maksimum")
-    count_records = fields.Integer(string="Jumlah Sampel")
+        ('hour', 'Hourly'),
+        ('day', 'Daily'),
+    ], string="Aggregation Type", required=True, default='hour')
+    bucket_start = fields.Datetime(string="Period Start", required=True, index=True)
+    avg_value = fields.Float(string="Average")
+    min_value = fields.Float(string="Min Value")
+    max_value = fields.Float(string="Max Value")
+    count_records = fields.Integer(string="Sample Count")
 
 
 # =============================================================================
@@ -473,40 +477,40 @@ class ScadaTagAggregate(models.Model):
 # =============================================================================
 class ScadaRule(models.Model):
     _name = 'scada.rule'
-    _description = 'Aturan Evaluasi & Alarm SCADA'
+    _description = 'SCADA Evaluation Rule & Alarm'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string="Nama Aturan", required=True, tracking=True)
-    tag_id = fields.Many2one('scada.tag', string="Tag Pemicu", required=True, tracking=True)
-    
+    name = fields.Char(string="Rule Name", required=True, tracking=True)
+    tag_id = fields.Many2one('scada.tag', string="Trigger Tag", required=True, tracking=True)
+
     operator = fields.Selection([
-        ('gt', '> (Lebih Besar Dari)'),
-        ('lt', '< (Lebih Kecil Dari)'),
-        ('gte', '>= (Lebih Besar Sama Dengan)'),
-        ('lte', '<= (Lebih Kecil Sama Dengan)'),
-        ('eq', '= (Sama Dengan)'),
-        ('neq', '!= (Tidak Sama Dengan)'),
-        ('range', 'Di Luar Rentang Normal'),
-        ('no_data', 'Tidak Ada Data (Loss of Signal)'),
-    ], string="Kondisi Pemicu", default='gt', required=True, tracking=True)
+        ('gt', '> (Greater Than)'),
+        ('lt', '< (Less Than)'),
+        ('gte', '>= (Greater Than or Equal)'),
+        ('lte', '<= (Less Than or Equal)'),
+        ('eq', '= (Equal To)'),
+        ('neq', '!= (Not Equal To)'),
+        ('range', 'Outside Normal Range'),
+        ('no_data', 'No Data (Loss of Signal)'),
+    ], string="Trigger Condition", default='gt', required=True, tracking=True)
 
-    threshold_value = fields.Float(string="Nilai Ambang Batas", default=80.0, tracking=True)
-    threshold_max = fields.Float(string="Batas Atas Rentang", default=100.0)
-    duration_seconds = fields.Integer(string="Durasi Minimum Terpenuhi (detik)", default=0)
-    hysteresis = fields.Float(string="Histeresis (Pencegah Fluktuasi)", default=0.0)
-    
+    threshold_value = fields.Float(string="Threshold Value", default=80.0, tracking=True)
+    threshold_max = fields.Float(string="Range Upper Bound", default=100.0)
+    duration_seconds = fields.Integer(string="Minimum Duration (seconds)", default=0)
+    hysteresis = fields.Float(string="Hysteresis (Anti-Fluctuation)", default=0.0)
+
     severity = fields.Selection([
-        ('info', 'Informasi (Info)'),
-        ('warning', 'Peringatan (Warning)'),
-        ('danger', 'Kritis / Bahaya (High/Critical)'),
-    ], string="Tingkat Keparahan (Severity)", default='warning', required=True, tracking=True)
+        ('info', 'Info'),
+        ('warning', 'Warning'),
+        ('danger', 'Critical / High'),
+    ], string="Severity", default='warning', required=True, tracking=True)
 
-    action_ids = fields.One2many('scada.action', 'rule_id', string="Aksi Otomatis")
+    action_ids = fields.One2many('scada.action', 'rule_id', string="Automated Actions")
     active = fields.Boolean(default=True)
-    company_id = fields.Many2one('res.company', string="Perusahaan", default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string="Company", default=lambda self: self.env.company)
 
     def evaluate(self, current_value):
-        """Mengevaluasi apakah aturan terpicu berdasarkan nilai saat ini."""
+        """Evaluate whether the rule is triggered based on the current tag value."""
         self.ensure_one()
         triggered = False
         val = float(current_value) if isinstance(current_value, (int, float)) else 0.0
@@ -530,8 +534,9 @@ class ScadaRule(models.Model):
             self._trigger_rule(val)
 
     def _trigger_rule(self, val):
+        """Create an alarm and execute all configured actions (debounce: skip if alarm already active)."""
         self.ensure_one()
-        # Cek apakah ada alarm aktif yang belum di-clear untuk mencegah duplikasi (Debounce / Rate Limit FR-R5)
+        # Check for an existing active alarm to prevent duplicates (Debounce / Rate Limit FR-R5)
         existing_alarm = self.env['scada.alarm'].search([
             ('rule_id', '=', self.id),
             ('state', 'in', ['active', 'ack']),
@@ -548,39 +553,40 @@ class ScadaRule(models.Model):
                 'state': 'active',
                 'triggered_at': fields.Datetime.now(),
             })
-            # Eksekusi aksi yang terkonfigurasi (FR-A1 s/d FR-A8)
+            # Execute all configured chained actions (FR-A1 through FR-A8)
             for action in self.action_ids:
                 action.execute_action(alarm)
 
 
 class ScadaAction(models.Model):
     _name = 'scada.action'
-    _description = 'Aksi Terangkai Rule SCADA'
+    _description = 'SCADA Rule Chained Action'
 
-    rule_id = fields.Many2one('scada.rule', string="Rule Terkait", ondelete='cascade', required=True)
+    rule_id = fields.Many2one('scada.rule', string="Related Rule", ondelete='cascade', required=True)
     action_type = fields.Selection([
-        ('maintenance', 'Buat Maintenance Request (Perawatan)'),
-        ('notify', 'Kirim Notifikasi Chatter / Email'),
-        ('write_plc', 'Tulis Nilai ke Tag PLC'),
-        ('server_action', 'Panggil Odoo Server Action'),
-    ], string="Tipe Aksi", default='maintenance', required=True)
+        ('maintenance', 'Create Maintenance Request'),
+        ('notify', 'Send Chatter / Email Notification'),
+        ('write_plc', 'Write Value to PLC Tag'),
+        ('server_action', 'Call Odoo Server Action'),
+    ], string="Action Type", default='maintenance', required=True)
 
-    # Konfigurasi Maintenance
-    maintenance_team_id = fields.Many2one('maintenance.team', string="Tim Maintenance")
-    maintenance_title = fields.Char(string="Judul Work Request", default="Peringatan SCADA: Perlu Pengecekan Mesin")
+    # Maintenance configuration
+    maintenance_team_id = fields.Many2one('maintenance.team', string="Maintenance Team")
+    maintenance_title = fields.Char(string="Work Request Title", default="SCADA Alert: Machine Inspection Required")
 
-    # Konfigurasi Penulisan PLC
-    target_tag_id = fields.Many2one('scada.tag', string="Target Tag PLC", domain="[('is_writable', '=', True)]")
-    write_value = fields.Char(string="Nilai Dituliskan", default="0")
+    # PLC write configuration
+    target_tag_id = fields.Many2one('scada.tag', string="Target PLC Tag", domain="[('is_writable', '=', True)]")
+    write_value = fields.Char(string="Value to Write", default="0")
 
     def execute_action(self, alarm):
+        """Execute this action in the context of a triggered alarm."""
         self.ensure_one()
         if self.action_type == 'maintenance':
-            # Pencegahan duplikasi tiket maintenance (FR-A1)
+            # Prevent duplicate maintenance tickets (FR-A1)
             equip_id = alarm.device_id.equipment_id.id if (alarm.device_id and alarm.device_id.equipment_id) else False
             req_vals = {
                 'name': f"[{alarm.severity.upper()}] {self.maintenance_title} ({alarm.tag_id.name})",
-                'description': f"Terpicu oleh alarm otomatis SCADA: Nilai={alarm.trigger_value} pada {alarm.triggered_at}",
+                'description': f"Triggered by SCADA automatic alarm: Value={alarm.trigger_value} at {alarm.triggered_at}",
                 'equipment_id': equip_id,
             }
             if self.maintenance_team_id:
@@ -602,34 +608,34 @@ class ScadaAction(models.Model):
 
 class ScadaAlarm(models.Model):
     _name = 'scada.alarm'
-    _description = 'Kejadian Alarm Mesin SCADA'
+    _description = 'SCADA Machine Alarm Event'
     _order = 'triggered_at desc, id desc'
 
-    name = fields.Char(string="Nama Alarm", required=True)
-    rule_id = fields.Many2one('scada.rule', string="Rule Pemicu", ondelete='set null')
-    tag_id = fields.Many2one('scada.tag', string="Tag Terkait", required=True)
-    device_id = fields.Many2one('scada.device', string="Mesin / Perangkat")
-    
+    name = fields.Char(string="Alarm Name", required=True)
+    rule_id = fields.Many2one('scada.rule', string="Trigger Rule", ondelete='set null')
+    tag_id = fields.Many2one('scada.tag', string="Related Tag", required=True)
+    device_id = fields.Many2one('scada.device', string="Machine / Device")
+
     severity = fields.Selection([
         ('info', 'Info'),
         ('warning', 'Warning'),
         ('danger', 'Critical / High'),
-    ], string="Tingkat", default='warning')
+    ], string="Severity", default='warning')
 
-    trigger_value = fields.Float(string="Nilai Saat Terpicu")
+    trigger_value = fields.Float(string="Trigger Value")
     state = fields.Selection([
-        ('active', 'Aktif (Active)'),
-        ('ack', 'Diakui (Acknowledged)'),
-        ('cleared', 'Selesai (Cleared)'),
-    ], string="Status Alarm", default='active', required=True)
+        ('active', 'Active'),
+        ('ack', 'Acknowledged'),
+        ('cleared', 'Cleared'),
+    ], string="Alarm State", default='active', required=True)
 
-    triggered_at = fields.Datetime(string="Waktu Terpicu", default=fields.Datetime.now)
-    ack_at = fields.Datetime(string="Waktu Diakui")
-    ack_by = fields.Many2one('res.users', string="Diakui Oleh")
-    cleared_at = fields.Datetime(string="Waktu Clear")
+    triggered_at = fields.Datetime(string="Triggered At", default=fields.Datetime.now)
+    ack_at = fields.Datetime(string="Acknowledged At")
+    ack_by = fields.Many2one('res.users', string="Acknowledged By")
+    cleared_at = fields.Datetime(string="Cleared At")
 
     def action_acknowledge(self):
-        """User mengakui alarm telah dilihat dan sedang ditangani."""
+        """Mark the alarm as acknowledged by the current user."""
         self.write({
             'state': 'ack',
             'ack_at': fields.Datetime.now(),
@@ -637,7 +643,7 @@ class ScadaAlarm(models.Model):
         })
 
     def action_clear(self):
-        """Mengakhiri alarm saat kondisi mesin telah normal."""
+        """Close the alarm once the machine condition has returned to normal."""
         self.write({
             'state': 'cleared',
             'cleared_at': fields.Datetime.now(),
@@ -649,20 +655,20 @@ class ScadaAlarm(models.Model):
 # =============================================================================
 class ScadaMapping(models.Model):
     _name = 'scada.mapping'
-    _description = 'Pemetaan Tag SCADA ke Data Odoo (MRP/Field)'
+    _description = 'SCADA Tag Mapping to Odoo Data (MRP/Field)'
 
-    name = fields.Char(string="Nama Pemetaan", required=True)
-    tag_id = fields.Many2one('scada.tag', string="Sumber Tag PLC", required=True)
-    target_model = fields.Char(string="Model Target Odoo", required=True, default="mrp.production")
-    target_field = fields.Char(string="Field Target", required=True, default="qty_producing")
-    
+    name = fields.Char(string="Mapping Name", required=True)
+    tag_id = fields.Many2one('scada.tag', string="Source PLC Tag", required=True)
+    target_model = fields.Char(string="Target Odoo Model", required=True, default="mrp.production")
+    target_field = fields.Char(string="Target Field", required=True, default="qty_producing")
+
     mode = fields.Selection([
-        ('set', 'Set Nilai Langsung'),
-        ('accumulate', 'Akumulasi (Tambah)'),
-        ('delta', 'Delta (Pertambahan Nilai)'),
-    ], string="Mode Pembaruan", default='delta', required=True)
+        ('set', 'Set Value Directly'),
+        ('accumulate', 'Accumulate (Add)'),
+        ('delta', 'Delta (Incremental)'),
+    ], string="Update Mode", default='delta', required=True)
 
-    condition_domain = fields.Char(string="Domain Pencarian Record", default="[('state', '=', 'progress')]")
+    condition_domain = fields.Char(string="Record Search Domain", default="[('state', '=', 'progress')]")
     active = fields.Boolean(default=True)
 
 
@@ -671,43 +677,45 @@ class ScadaMapping(models.Model):
 # =============================================================================
 class ScadaWriteRequest(models.Model):
     _name = 'scada.write.request'
-    _description = 'Antrean Perintah Tulis ke PLC'
+    _description = 'PLC Write Command Queue'
     _order = 'create_date desc'
 
     tag_id = fields.Many2one('scada.tag', string="Target Tag", required=True)
-    requested_value = fields.Char(string="Nilai yang Diminta", required=True)
+    requested_value = fields.Char(string="Requested Value", required=True)
     state = fields.Selection([
-        ('pending', 'Menunggu Eksekusi Gateway'),
-        ('sent', 'Terkirim ke Gateway'),
-        ('success', 'Berhasil Ditulis ke PLC'),
-        ('rejected', 'Ditolak (Batas Nilai / Hak Akses)'),
-        ('failed', 'Gagal / Timeout'),
-    ], string="Status Tulis", default='pending', tracking=True)
+        ('pending', 'Pending Gateway Execution'),
+        ('sent', 'Sent to Gateway'),
+        ('success', 'Successfully Written to PLC'),
+        ('rejected', 'Rejected (Value Bounds / Access Rights)'),
+        ('failed', 'Failed / Timeout'),
+    ], string="Write Status", default='pending', tracking=True)
 
-    origin = fields.Char(string="Sumber Perintah", default="Manual Engineer")
-    executed_by = fields.Many2one('res.users', string="Dieksekusi Oleh", default=lambda self: self.env.user)
-    response_message = fields.Text(string="Respon Gateway / PLC")
-    
+    origin = fields.Char(string="Command Origin", default="Manual Engineer")
+    executed_by = fields.Many2one('res.users', string="Executed By", default=lambda self: self.env.user)
+    response_message = fields.Text(string="Gateway / PLC Response")
+
     @api.model
     def create_write_command(self, tag, value, origin="Manual"):
         """
-        Metode aman membuat perintah tulis dengan validasi IEC 62443 (FR-A3, Section 7.3):
-        1. Cek mode read-only global
-        2. Cek apakah tag bertanda writable
-        3. Cek batas rentang minimum/maksimum
+        Safely create a PLC write command with IEC 62443 validation (FR-A3, Section 7.3).
+
+        Checks performed (in order):
+        1. Global read-only mode
+        2. Tag writable flag
+        3. Min/max value range bounds
         """
         readonly_mode = self.env['ir.config_parameter'].sudo().get_param('scada.readonly_mode', False)
         if readonly_mode:
-            raise UserError(_("Peringatan Keamanan OT: Sistem SCADA sedang dalam mode READ-ONLY GLOBAL. Penulisan ke PLC dinonaktifkan."))
+            raise UserError(_("OT Security Alert: The SCADA system is in GLOBAL READ-ONLY mode. PLC writes are disabled."))
 
         if not tag.is_writable:
-            raise UserError(_("Tag '%s' tidak memiliki izin penulisan (Read-Only).") % tag.name)
+            raise UserError(_("Tag '%s' does not have write permission (Read-Only).") % tag.name)
 
-        # Validasi batas nilai numerik
+        # Validate numeric value bounds
         try:
             num_val = float(value)
             if num_val < tag.min_write_value or num_val > tag.max_write_value:
-                raise ValidationError(_("Nilai %.2f berada di luar batas aman yang diizinkan (Min: %.2f, Max: %.2f).") % (num_val, tag.min_write_value, tag.max_write_value))
+                raise ValidationError(_("Value %.2f is outside the allowed safe range (Min: %.2f, Max: %.2f).") % (num_val, tag.min_write_value, tag.max_write_value))
         except ValueError:
             pass
 
@@ -718,11 +726,11 @@ class ScadaWriteRequest(models.Model):
             'state': 'pending',
         })
 
-        # Catat audit log tak dapat diubah (append-only)
+        # Record append-only audit log
         self.env['scada.log'].create({
             'log_type': 'write_audit',
             'level': 'info',
-            'message': f"Perintah tulis dibuat untuk Tag [{tag.code}] = {value} oleh user {self.env.user.name}. Asal: {origin}",
+            'message': f"Write command created for Tag [{tag.code}] = {value} by user {self.env.user.name}. Origin: {origin}",
             'connection_id': tag.connection_id.id,
         })
         return req
@@ -730,23 +738,23 @@ class ScadaWriteRequest(models.Model):
 
 class ScadaLog(models.Model):
     _name = 'scada.log'
-    _description = 'Audit & Log Operasional SCADA (IEC 62443)'
+    _description = 'SCADA Operational Audit & Log (IEC 62443)'
     _order = 'timestamp desc, id desc'
 
     log_type = fields.Selection([
-        ('connection', 'Koneksi PLC'),
-        ('telemetry', 'Telemetri / Ingest'),
-        ('write_audit', 'Audit Tulis PLC (IEC 62443)'),
-        ('security', 'Keamanan & Autentikasi'),
-    ], string="Kategori Log", required=True, default='connection')
+        ('connection', 'PLC Connection'),
+        ('telemetry', 'Telemetry / Ingest'),
+        ('write_audit', 'PLC Write Audit (IEC 62443)'),
+        ('security', 'Security & Authentication'),
+    ], string="Log Category", required=True, default='connection')
 
     level = fields.Selection([
         ('info', 'Info'),
         ('warning', 'Warning'),
         ('error', 'Error'),
-    ], string="Tingkat", default='info', required=True)
+    ], string="Level", default='info', required=True)
 
-    message = fields.Text(string="Pesan Log", required=True)
+    message = fields.Text(string="Log Message", required=True)
     gateway_id = fields.Many2one('scada.gateway', string="Gateway")
-    connection_id = fields.Many2one('scada.connection', string="Koneksi")
-    timestamp = fields.Datetime(string="Waktu", default=fields.Datetime.now, required=True)
+    connection_id = fields.Many2one('scada.connection', string="Connection")
+    timestamp = fields.Datetime(string="Timestamp", default=fields.Datetime.now, required=True)
