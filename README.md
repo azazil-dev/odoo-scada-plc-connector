@@ -4,8 +4,7 @@
 
 ### SCADA & Industrial IoT Integration Platform for **Odoo Community Edition**
 
-![Odoo](https://img.shields.io/badge/Odoo-17%20CE-875A7B?style=for-the-badge&logo=odoo&logoColor=white)
-![Version](https://img.shields.io/badge/version-17.0.1.0.0-0284C7?style=for-the-badge)
+![Odoo](https://img.shields.io/badge/Odoo-CE-875A7B?style=for-the-badge&logo=odoo&logoColor=white)
 ![License](https://img.shields.io/badge/license-LGPL--3-6B8E23?style=for-the-badge)
 ![IEC 62443](https://img.shields.io/badge/security-IEC%2062443%20Ready-E11D48?style=for-the-badge)
 
@@ -32,14 +31,14 @@
 ## 🚀 Quick Install
 
 ```bash
-git clone -b 17.0 git@github.com:azazil-dev/odoo-scada-plc-connector.git
+git clone git@github.com:azazil-dev/odoo-scada-plc-connector.git
 # place scada_plc_connector/ into your addons path, then install from the Odoo UI (Apps → SCADA PLC Connector)
 ```
 
 ## 🔗 Link for the Odoo Apps Store
 
 ```
-ssh://git@github.com:azazil-dev/odoo-scada-plc-connector#17.0
+ssh://git@github.com:azazil-dev/odoo-scada-plc-connector
 ```
 
 ## 📜 License
