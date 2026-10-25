@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top-Level Root Menu -->
+    <menuitem id="menu_scada_root"
+              name="SCADA &amp; PLC"
+              web_icon="scada_plc_connector,static/description/icon.png"
+              groups="scada_plc_connector.group_scada_viewer"
+              sequence="25"/>
+
+    <!-- 1. Monitoring Menu -->
+    <menuitem id="menu_scada_monitoring"
+              name="Monitoring"
+              parent="menu_scada_root"
+              sequence="10"/>
+
+    <record id="action_scada_tag_live" model="ir.actions.act_window">
+        <field name="name">Tag Live Telemetry</field>
+        <field name="res_model">scada.tag</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No tags registered yet. Create a new tag or import from a CSV file.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_scada_tag_live"
+              name="Tag Live"
+              parent="menu_scada_monitoring"
+              action="action_scada_tag_live"
+              sequence="10"/>
+
+    <record id="action_scada_device" model="ir.actions.act_window">
+        <field name="name">Devices &amp; Machines</field>
+        <field name="res_model">scada.device</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_scada_device"
+              name="Plant Machines"
+              parent="menu_scada_monitoring"
+              action="action_scada_device"
+              sequence="20"/>
+
+    <record id="action_scada_alarm" model="ir.actions.act_window">
+        <field name="name">Machine Alarms &amp; Warnings</field>
+        <field name="res_model">scada.alarm</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_scada_alarm_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No machine alarms have been triggered.
+            </p>
+            <p>
+                The system automatically records alarms when a PLC tag reading violates a threshold rule (scada.rule).
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_scada_alarm"
+              name="Alarm List"
+              parent="menu_scada_monitoring"
+              action="action_scada_alarm"
+              sequence="30"/>
+
+    <!-- 3. Operations &amp; Security (PLC Write Audit) -->
+    <menuitem id="menu_scada_security"
+              name="Audit &amp; Control"
+              parent="menu_scada_root"
+              groups="scada_plc_connector.group_scada_engineer"
+              sequence="20"/>
+
+    <record id="action_scada_write_request" model="ir.actions.act_window">
+        <field name="name">PLC Write Command Queue</field>
+        <field name="res_model">scada.write.request</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_scada_write_request"
+              name="PLC Write Commands"
+              parent="menu_scada_security"
+              action="action_scada_write_request"
+              sequence="10"/>
+
+    <record id="action_scada_log" model="ir.actions.act_window">
+        <field name="name">Audit Log (IEC 62443)</field>
+        <field name="res_model">scada.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_scada_log"
+              name="Audit Log IEC 62443"
+              parent="menu_scada_security"
+              action="action_scada_log"
+              groups="scada_plc_connector.group_scada_admin"
+              sequence="20"/>
+
+    <!-- 2. Configuration Menu -->
+    <menuitem id="menu_scada_config"
+              name="Configuration"
+              parent="menu_scada_root"
+              groups="scada_plc_connector.group_scada_engineer"
+              sequence="30"/>
+
+    <record id="action_scada_gateway" model="ir.actions.act_window">
+        <field name="name">Edge Gateways</field>
+        <field name="res_model">scada.gateway</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_scada_gateway"
+              name="Gateways"
+              parent="menu_scada_config"
+              action="action_scada_gateway"
+              sequence="10"/>
+
+    <record id="action_scada_connection" model="ir.actions.act_window">
+        <field name="name">PLC Connections</field>
+        <field name="res_model">scada.connection</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_scada_connection"
+              name="PLC Connections"
+              parent="menu_scada_config"
+              action="action_scada_connection"
+              sequence="20"/>
+
+    <menuitem id="menu_scada_tag_config"
+              name="Tag List"
+              parent="menu_scada_config"
+              action="action_scada_tag_live"
+              sequence="30"/>
+
+    <menuitem id="menu_scada_tag_import"
+              name="Import Tags from CSV"
+              parent="menu_scada_config"
+              action="action_scada_tag_import_wizard"
+              sequence="35"/>
+
+    <record id="action_scada_rule" model="ir.actions.act_window">
+        <field name="name">Rules &amp; Automated Actions</field>
+        <field name="res_model">scada.rule</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_scada_rule"
+              name="Rules &amp; Actions"
+              parent="menu_scada_config"
+              action="action_scada_rule"
+              sequence="40"/>
+
+    <record id="action_scada_mapping" model="ir.actions.act_window">
+        <field name="name">Tag Mapping to Odoo (MRP/Field)</field>
+        <field name="res_model">scada.mapping</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_scada_mapping"
+              name="Odoo Mapping"
+              parent="menu_scada_config"
+              action="action_scada_mapping"
+              sequence="50"/>
+
+    <menuitem id="menu_scada_settings"
+              name="Settings"
+              parent="menu_scada_config"
+              action="action_scada_config_settings"
+              groups="scada_plc_connector.group_scada_admin"
+              sequence="90"/>
+
+</odoo>

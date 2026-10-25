@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- 1. Default Simulator Gateway -->
+        <record id="demo_scada_gateway_main" model="scada.gateway">
+            <field name="name">Main Plant Gateway (Production Line A)</field>
+            <field name="code">GW-PLANT-01</field>
+            <field name="mode">embedded</field>
+            <field name="status">online</field>
+            <field name="last_heartbeat" eval="DateTime.now()"/>
+            <field name="version">1.0.0-ce</field>
+            <field name="host_os">Linux Ubuntu 22.04 LTS (x86_64)</field>
+            <field name="buffer_queue_size">0</field>
+            <field name="api_key_hash">8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918</field>
+        </record>
+
+        <!-- 2. Simulator & Modbus Connections -->
+        <record id="demo_scada_conn_simulator" model="scada.connection">
+            <field name="name">Production Line 1 PLC (Built-in Simulator)</field>
+            <field name="code">CONN-SIM-01</field>
+            <field name="gateway_id" ref="demo_scada_gateway_main"/>
+            <field name="protocol">simulator</field>
+            <field name="host">127.0.0.1</field>
+            <field name="port">502</field>
+            <field name="state">online</field>
+            <field name="last_seen" eval="DateTime.now()"/>
+            <field name="latency_ms">1.2</field>
+            <field name="poll_interval_default">1.0</field>
+        </record>
+
+        <record id="demo_scada_conn_modbus" model="scada.connection">
+            <field name="name">Modbus TCP PLC — CNC Wood Router</field>
+            <field name="code">CONN-MODBUS-02</field>
+            <field name="gateway_id" ref="demo_scada_gateway_main"/>
+            <field name="protocol">modbus_tcp</field>
+            <field name="host">192.168.1.120</field>
+            <field name="port">502</field>
+            <field name="unit_id">1</field>
+            <field name="state">online</field>
+            <field name="last_seen" eval="DateTime.now()"/>
+            <field name="latency_ms">4.5</field>
+            <field name="poll_interval_default">2.0</field>
+        </record>
+
+        <!-- 3. Devices / Machines -->
+        <record id="demo_scada_dev_cnc" model="scada.device">
+            <field name="name">CNC Wood Milling Machine 5-Axis</field>
+            <field name="code">MCH-CNC-01</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="state">running</field>
+            <field name="description">High-precision teak furniture component shaping machine.</field>
+        </record>
+
+        <record id="demo_scada_dev_dryer" model="scada.device">
+            <field name="name">Kiln Drying Chamber (Wood Dryer)</field>
+            <field name="code">MCH-KILN-02</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="state">running</field>
+            <field name="description">Automated wood dryer with humidity and temperature control.</field>
+        </record>
+
+        <!-- 4. Telemetry Tags -->
+        <record id="demo_tag_spindle_temp" model="scada.tag">
+            <field name="name">Main Spindle Motor Temperature</field>
+            <field name="code">CNC_SPINDLE_TEMP</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="device_id" ref="demo_scada_dev_cnc"/>
+            <field name="address">SIM:TEMP_01</field>
+            <field name="data_type">float32</field>
+            <field name="unit">°C</field>
+            <field name="mode">read_write</field>
+            <field name="is_writable" eval="True"/>
+            <field name="min_write_value">20.0</field>
+            <field name="max_write_value">120.0</field>
+        </record>
+
+        <record id="demo_tag_spindle_rpm" model="scada.tag">
+            <field name="name">Spindle Rotational Speed</field>
+            <field name="code">CNC_SPINDLE_RPM</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="device_id" ref="demo_scada_dev_cnc"/>
+            <field name="address">SIM:RPM</field>
+            <field name="data_type">float32</field>
+            <field name="unit">RPM</field>
+            <field name="mode">read</field>
+        </record>
+
+        <record id="demo_tag_prod_counter" model="scada.tag">
+            <field name="name">Finished Product Counter (Pieces)</field>
+            <field name="code">CNC_PROD_COUNTER</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="device_id" ref="demo_scada_dev_cnc"/>
+            <field name="address">SIM:COUNTER</field>
+            <field name="data_type">int32</field>
+            <field name="unit">pcs</field>
+            <field name="mode">read</field>
+        </record>
+
+        <record id="demo_tag_kiln_temp" model="scada.tag">
+            <field name="name">Kiln Chamber Temperature</field>
+            <field name="code">KILN_CHAMBER_TEMP</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="device_id" ref="demo_scada_dev_dryer"/>
+            <field name="address">SIM:TEMP_02</field>
+            <field name="data_type">float32</field>
+            <field name="unit">°C</field>
+            <field name="mode">read_write</field>
+            <field name="is_writable" eval="True"/>
+            <field name="min_write_value">30.0</field>
+            <field name="max_write_value">90.0</field>
+        </record>
+
+        <record id="demo_tag_kiln_pressure" model="scada.tag">
+            <field name="name">Air Circulation Pressure</field>
+            <field name="code">KILN_AIR_PRESSURE</field>
+            <field name="connection_id" ref="demo_scada_conn_simulator"/>
+            <field name="device_id" ref="demo_scada_dev_dryer"/>
+            <field name="address">SIM:PRESS_01</field>
+            <field name="data_type">float32</field>
+            <field name="unit">bar</field>
+            <field name="mode">read</field>
+        </record>
+
+        <!-- 5. Last Values (scada.tag.last cache) -->
+        <record id="demo_last_spindle_temp" model="scada.tag.last">
+            <field name="tag_id" ref="demo_tag_spindle_temp"/>
+            <field name="value_str">82.4</field>
+            <field name="value_num">82.4</field>
+            <field name="quality">good</field>
+            <field name="timestamp" eval="DateTime.now()"/>
+        </record>
+
+        <record id="demo_last_spindle_rpm" model="scada.tag.last">
+            <field name="tag_id" ref="demo_tag_spindle_rpm"/>
+            <field name="value_str">1480.0</field>
+            <field name="value_num">1480.0</field>
+            <field name="quality">good</field>
+            <field name="timestamp" eval="DateTime.now()"/>
+        </record>
+
+        <record id="demo_last_prod_counter" model="scada.tag.last">
+            <field name="tag_id" ref="demo_tag_prod_counter"/>
+            <field name="value_str">342</field>
+            <field name="value_num">342.0</field>
+            <field name="quality">good</field>
+            <field name="timestamp" eval="DateTime.now()"/>
+        </record>
+
+        <record id="demo_last_kiln_temp" model="scada.tag.last">
+            <field name="tag_id" ref="demo_tag_kiln_temp"/>
+            <field name="value_str">68.5</field>
+            <field name="value_num">68.5</field>
+            <field name="quality">good</field>
+            <field name="timestamp" eval="DateTime.now()"/>
+        </record>
+
+        <!-- 6. Automated Rules & Alarms -->
+        <record id="demo_rule_overheat" model="scada.rule">
+            <field name="name">CNC Spindle Overheat Detection (&gt; 85 °C)</field>
+            <field name="tag_id" ref="demo_tag_spindle_temp"/>
+            <field name="operator">gt</field>
+            <field name="threshold_value">85.0</field>
+            <field name="severity">danger</field>
+            <field name="duration_seconds">10</field>
+            <field name="hysteresis">2.0</field>
+        </record>
+
+        <record id="demo_action_maintenance" model="scada.action">
+            <field name="rule_id" ref="demo_rule_overheat"/>
+            <field name="action_type">maintenance</field>
+            <field name="maintenance_title">Inspect CNC Spindle Lubrication &amp; Cooling System</field>
+        </record>
+    </data>
+</odoo>

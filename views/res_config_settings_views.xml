@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_scada" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.scada</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="75"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="SCADA" string="SCADA &amp; PLC" name="scada_plc_connector" groups="scada_plc_connector.group_scada_admin">
+                    <block title="PLC Write Security &amp; Control (IEC 62443 FR2/FR3)" name="scada_write_security_settings">
+                        <setting string="Global Read-Only / Kill-Switch" help="Emergency global switch to instantly disable all write commands to PLC registers (FR-193).">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_plc_write_mode" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="IEC 62443 Security Profile" help="Enforce strict controls: writable tag whitelist, min/max value validation, and SHA-256 hashed API key authentication (FR-194).">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_iec62443_profile" class="oe_inline"/>
+                                    <label for="scada_iec62443_profile" class="ms-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Plant Topology &amp; Multi-Company (FR-189, FR-190)" name="scada_topology_settings">
+                        <setting string="Multi-Company" help="Enable data isolation for machine configuration, gateways, and telemetry per company in a multi-company environment.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_enable_multi_company" class="oe_inline"/>
+                                    <label for="scada_enable_multi_company" class="ms-2"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Location / Plant Mode" help="Choose between a single local plant or multi-site deployment with gateway assignment per location.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_location_mode" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+
+                    <block title="Data Storage Engine &amp; Performance (FR-191, FR-S3)" name="scada_performance_settings">
+                        <setting string="History Storage Backend" help="Use the standard built-in PostgreSQL table, or enable a TimescaleDB hypertable if the extension is installed for high-throughput ingest.">
+                            <div class="content-group">
+                                <div class="mt8">
+                                    <field name="scada_history_backend" class="w-75"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting string="Telemetry History Retention" help="Number of days to retain tag value history before it is automatically purged by a cron job (default: 30 days).">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="scada_retention_days" class="col-lg-5 o_light_label"/>
+                                    <field name="scada_retention_days" class="col-lg-4"/>
+                                </div>
+                                <div class="row mt8">
+                                    <label for="scada_ingest_rate_limit" class="col-lg-5 o_light_label"/>
+                                    <field name="scada_ingest_rate_limit" class="col-lg-4"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_scada_config_settings" model="ir.actions.act_window">
+        <field name="name">SCADA Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'scada_plc_connector'}</field>
+    </record>
+</odoo>

@@ -1,0 +1,265 @@
+<div class="container my-4" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1E293B;">
+    <!-- ================================================================= -->
+    <!-- 1. HERO HEADER SECTION (Clean Odoo Theme / Explicit Contrast)     -->
+    <!-- ================================================================= -->
+    <div class="row align-items-center mb-4 p-4 rounded-4 shadow-sm" style="background: #F8FAFC; border-left: 6px solid #714B67; border: 1px solid #E2E8F0;">
+        <div class="col-md-2 text-center mb-3 mb-md-0">
+            <div class="d-inline-flex p-3 rounded-circle shadow-sm" style="background: rgba(113, 75, 103, 0.1); border: 2px solid #714B67;">
+                <i class="fa fa-cogs fa-4x" style="color: #714B67;"></i>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <h2 class="mb-0 fw-bold tracking-wide" style="color: #212529;">SCADA &amp; PLC Integration Platform</h2>
+                <span class="badge rounded-pill" style="background-color: #714B67; color: #FFFFFF; font-size: 0.8rem; padding: 6px 12px;">
+                    <i class="fa fa-bolt me-1"></i>Odoo 18 Community Edition
+                </span>
+                <span class="badge rounded-pill" style="background-color: #059669; color: #FFFFFF; font-size: 0.8rem; padding: 6px 12px;">
+                    <i class="fa fa-shield me-1"></i>IEC 62443 Ready
+                </span>
+            </div>
+            <p class="mb-0 fs-6" style="line-height: 1.6; color: #334155;">
+                Turn Odoo 18 CE into the real-time control and telemetry center for your factory machinery. Connect <strong style="color: #0F172A;">Modbus TCP, OPC UA, Siemens S7, MQTT</strong>, and other industrial protocols directly to the MRP, Maintenance, and Quality modules without writing any code.
+            </p>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 2. LIVE METRICS & VALUE PROPOSITION                               -->
+    <!-- ================================================================= -->
+    <div class="row g-3 mb-4">
+        <!-- Metric 1 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-3 rounded-3" style="background: #FFFFFF; border-top: 4px solid #0284C7 !important;">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge me-2 p-2 rounded-circle" style="background-color: #E0F2FE; color: #0284C7;"><i class="fa fa-plug fa-lg"></i></span>
+                    <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">Protocol-Agnostic</h6>
+                </div>
+                <p class="card-text text-muted small mb-0">
+                    A single unified interface for Modbus TCP, OPC UA, Siemens S7, and MQTT, powered by an extensible Python Driver SDK.
+                </p>
+            </div>
+        </div>
+        <!-- Metric 2 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-3 rounded-3" style="background: #FFFFFF; border-top: 4px solid #10B981 !important;">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge me-2 p-2 rounded-circle" style="background-color: #D1FAE5; color: #059669;"><i class="fa fa-flash fa-lg"></i></span>
+                    <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">&ge; 2.000 Ingest / Detik</h6>
+                </div>
+                <p class="card-text text-muted small mb-0">
+                    High-throughput batch ingestion via the <code>/scada/api/v1/ingest</code> REST API with ETag-based dynamic config sync.
+                </p>
+            </div>
+        </div>
+        <!-- Metric 3 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-3 rounded-3" style="background: #FFFFFF; border-top: 4px solid #F59E0B !important;">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge me-2 p-2 rounded-circle" style="background-color: #FEF3C7; color: #D97706;"><i class="fa fa-bell fa-lg"></i></span>
+                    <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">Rule &amp; Alarm Engine</h6>
+                </div>
+                <p class="card-text text-muted small mb-0">
+                    Automatically raise maintenance work requests and supervisor alerts whenever temperature or vibration exceeds its threshold.
+                </p>
+            </div>
+        </div>
+        <!-- Metric 4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-3 rounded-3" style="background: #FFFFFF; border-top: 4px solid #EF4444 !important;">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="badge me-2 p-2 rounded-circle" style="background-color: #FEE2E2; color: #DC2626;"><i class="fa fa-shield fa-lg"></i></span>
+                    <h6 class="card-title mb-0 fw-bold" style="color: #0F172A;">OT-Safe &amp; Clamping</h6>
+                </div>
+                <p class="card-text text-muted small mb-0">
+                    Strictly permissioned PLC write control, safety min/max clamping, global Read-Only mode, and a tamper-proof audit trail.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 3. INTERACTIVE ARCHITECTURE & DATA FLOW PROGRESSION               -->
+    <!-- ================================================================= -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
+        <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-3">
+            <div>
+                <h4 class="fw-bold mb-1" style="color: #0F172A;">Industrial Data Flow Architecture (OT &rarr; IT)</h4>
+                <p class="text-muted small mb-0">Per PRD Specification Section 5: No Inbound Ports Open to the Factory Machine Network</p>
+            </div>
+            <span class="badge bg-light text-dark border p-2"><i class="fa fa-cubes me-1"></i>Odoo 18 CE Architecture</span>
+        </div>
+        
+        <div class="row g-3 text-center">
+            <!-- Step 1 -->
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 h-100" style="background: #F8FAFC; border: 1px dashed #CBD5E1;">
+                    <div class="mb-2"><span class="badge bg-dark text-white px-2 py-1">Layer 1: OT Field</span></div>
+                    <i class="fa fa-microchip fa-2x mb-2" style="color: #0284C7;"></i>
+                    <h6 class="fw-bold mb-1" style="color: #1E293B;">Factory Machinery &amp; PLCs</h6>
+                    <small class="text-muted d-block">Siemens S7, Modbus RTU/TCP, Omron, CNC, Temperature/RPM Sensors</small>
+                </div>
+            </div>
+            <!-- Arrow -->
+            <!-- Step 2 -->
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 h-100" style="background: #F0FDF4; border: 1px dashed #86EFAC;">
+                    <div class="mb-2"><span class="badge bg-success text-white px-2 py-1">Layer 2: Edge</span></div>
+                    <i class="fa fa-server fa-2x mb-2" style="color: #10B981;"></i>
+                    <h6 class="fw-bold mb-1" style="color: #065F46;">Edge SCADA Gateway</h6>
+                    <small class="text-muted d-block">Store-and-Forward (SQLite Buffer), Driver Polling, Outbound HTTPS</small>
+                </div>
+            </div>
+            <!-- Step 3 -->
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 h-100" style="background: #EFF6FF; border: 1px dashed #93C5FD;">
+                    <div class="mb-2"><span class="badge bg-primary text-white px-2 py-1">Layer 3: Ingest API</span></div>
+                    <i class="fa fa-exchange fa-2x mb-2" style="color: #3B82F6;"></i>
+                    <h6 class="fw-bold mb-1" style="color: #1E40AF;">Odoo REST Endpoints</h6>
+                    <small class="text-muted d-block">Batch Ingestion, Real-time Rule Evaluation, Historian Ingestion</small>
+                </div>
+            </div>
+            <!-- Step 4 -->
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 h-100" style="background: #FAF5FF; border: 1px dashed #D8B4FE;">
+                    <div class="mb-2"><span class="badge bg-info text-white px-2 py-1">Layer 4: ERP Action</span></div>
+                    <i class="fa fa-dashboard fa-2x mb-2" style="color: #8B5CF6;"></i>
+                    <h6 class="fw-bold mb-1" style="color: #5B21B6;">Automated Odoo Actions</h6>
+                    <small class="text-muted d-block">MRP Output (Qty Producing), Maintenance Tickets, Critical Alarms, Live Telemetry</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 4. DETAILED FEATURE MATRIX (PRD Section 6)                        -->
+    <!-- ================================================================= -->
+    <div class="row g-4 mb-4">
+        <!-- Left Column: OT Connectivity & Drivers -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fa fa-network-wired fa-lg me-2" style="color: #0284C7;"></i>
+                    <h5 class="fw-bold mb-0" style="color: #0F172A;">Industrial Connectivity &amp; Drivers</h5>
+                </div>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Built-in Simulator Driver (Phase 1 MVP):</strong>
+                            <span class="text-muted small d-block">Supports end-to-end testing without any physical PLC hardware, using realistic sine-wave temperature, RPM, and R/W register values.</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Interactive Test Connection Button:</strong>
+                            <span class="text-muted small d-block">Instantly checks the TCP/IP socket route to the PLC, reporting latency in milliseconds with a live status indicator.</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">CSV Tag Import &amp; Export Wizard:</strong>
+                            <span class="text-muted small d-block">Add dozens of machine registers in a single click, with no need to enter them manually one by one.</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Value Transformation &amp; Formulas:</strong>
+                            <span class="text-muted small d-block">Scale factor, offset, and safe <code>safe_eval</code> expressions (e.g. <code>value * 0.1 - 5</code>) for precision sensor calibration.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column: Safety, IEC 62443 & ERP Automation -->
+        <div class="col-lg-6">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fa fa-shield-halved fa-lg me-2" style="color: #059669;"></i>
+                    <h5 class="fw-bold mb-0" style="color: #0F172A;">OT Security &amp; ERP Automation</h5>
+                </div>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Layered PLC Write Control:</strong>
+                            <span class="text-muted small d-block">Every tag must be flagged <code>is_writable</code>, bounded by a min/max safety range, and backed by an explicit operator confirmation wizard.</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Automatic Alarms Become Maintenance Work Requests:</strong>
+                            <span class="text-muted small d-block">Fully integrated with <code>maintenance.request</code>, including a debounce mechanism that prevents duplicate tickets.</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">4-Tier Access Control Separation:</strong>
+                            <span class="text-muted small d-block">SCADA Viewer (Operator), SCADA User (Supervisor/Technician), SCADA Engineer (Automation), and SCADA Administrator (IT).</span>
+                        </div>
+                    </li>
+                    <li class="d-flex align-items-start">
+                        <i class="fa fa-check-circle mt-1 me-2 text-success"></i>
+                        <div>
+                            <strong style="color: #1E293B;">Append-Only Audit Log (IEC 62443):</strong>
+                            <span class="text-muted small d-block">Records the full history of write commands (who, when, value, command origin, and PLC response) that can never be edited or deleted.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 5. PROTOCOL COMPATIBILITY SHOWCASE                                -->
+    <!-- ================================================================= -->
+    <div class="card border-0 shadow-sm p-4 mb-4 rounded-4" style="background: #F8FAFC; border: 1px solid #E2E8F0;">
+        <h5 class="fw-bold mb-3 text-center" style="color: #0F172A;">Global Industrial Protocol Support</h5>
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-white rounded-3 shadow-sm border">
+                    <strong class="d-block text-primary">Modbus TCP / RTU</strong>
+                    <span class="text-muted small">Coils, Inputs, Holding Registers</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-white rounded-3 shadow-sm border">
+                    <strong class="d-block text-success">Siemens S7</strong>
+                    <span class="text-muted small">S7-300 / 400 / 1200 / 1500 DB Blocks</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-white rounded-3 shadow-sm border">
+                    <strong class="d-block text-warning">OPC UA</strong>
+                    <span class="text-muted small">Node Tree &amp; Subscriptions</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="p-3 bg-white rounded-3 shadow-sm border">
+                    <strong class="d-block text-danger">MQTT / Sparkplug B</strong>
+                    <span class="text-muted small">Pub/Sub Industrial IoT Brokers</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- 6. FOOTER & SUPPORT                                               -->
+    <!-- ================================================================= -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded-3" style="background: #FFFFFF; border: 1px solid #E2E8F0;">
+        <div class="small text-muted">
+            <i class="fa fa-info-circle me-1" style="color: #0284C7;"></i>
+            Designed and tested on <strong>Odoo 17.0 Community Edition</strong>. Compatible with multi-worker architecture and PostgreSQL 14+.
+        </div>
+        <div class="small text-muted">
+            Developer: <strong style="color: #0F172A;">Arif N Ramadhan</strong>
+        </div>
+    </div>
+</div>
+

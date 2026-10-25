@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ================================================================= -->
+    <!-- WIZARD ACTIONS & VIEWS (must be defined before referenced in forms) -->
+    <!-- ================================================================= -->
+    <record id="view_scada_tag_import_wizard_form" model="ir.ui.view">
+        <field name="name">scada.tag.import.wizard.form</field>
+        <field name="model">scada.tag.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import PLC Tags from CSV">
+                <group>
+                    <field name="connection_id"/>
+                    <field name="device_id"/>
+                    <field name="file_data" filename="filename"/>
+                    <field name="filename" invisible="1"/>
+                </group>
+                <p class="text-muted small">
+                    CSV column format: <code>code, name, address, data_type, unit</code><br/>
+                    Example: <code>TEMP_01, Motor Temperature, SIM:TEMP_01, float32, °C</code>
+                </p>
+                <footer>
+                    <button name="action_import" string="Start Import" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_scada_tag_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import PLC Tags from CSV</field>
+        <field name="res_model">scada.tag.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_scada_tag_write_wizard_form" model="ir.ui.view">
+        <field name="name">scada.tag.write.wizard.form</field>
+        <field name="model">scada.tag.write.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm PLC Register Write">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fa fa-exclamation-triangle me-1" title="Industrial Safety Warning"/> <strong>Industrial Safety Warning:</strong> This command will directly modify the value in physical PLC memory or machine controller.
+                </div>
+                <group>
+                    <field name="tag_id" readonly="1"/>
+                    <field name="current_value" readonly="1"/>
+                    <field name="unit" readonly="1"/>
+                    <field name="new_value"/>
+                    <field name="min_value" readonly="1"/>
+                    <field name="max_value" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_execute_write" string="Confirm &amp; Write to PLC" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_scada_tag_write_wizard" model="ir.actions.act_window">
+        <field name="name">Write Value to PLC</field>
+        <field name="res_model">scada.tag.write.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 1. GATEWAY VIEWS                                                  -->
+    <!-- ================================================================= -->
+    <record id="view_scada_gateway_tree" model="ir.ui.view">
+        <field name="name">scada.gateway.tree</field>
+        <field name="model">scada.gateway</field>
+        <field name="arch" type="xml">
+            <list string="IoT &amp; SCADA Gateways" decoration-success="status == 'online'" decoration-danger="status == 'offline'" decoration-warning="status == 'warning'">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="mode"/>
+                <field name="status" widget="badge" decoration-success="status == 'online'" decoration-danger="status == 'offline'" decoration-warning="status == 'warning'"/>
+                <field name="active_tags_count"/>
+                <field name="last_heartbeat"/>
+                <field name="version"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_gateway_form" model="ir.ui.view">
+        <field name="name">scada.gateway.form</field>
+        <field name="model">scada.gateway</field>
+        <field name="arch" type="xml">
+            <form string="Edge SCADA Gateway">
+                <header>
+                    <button name="action_generate_api_key" string="Generate / Rotate API Key" type="object" class="btn-primary" groups="scada_plc_connector.group_scada_admin"/>
+                    <field name="status" widget="statusbar" statusbar_visible="online,warning,offline"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Gateway Name"/>
+                        <h1><field name="name" placeholder="e.g. Plant Line A Gateway"/></h1>
+                        <span class="text-muted"><field name="code"/></span>
+                    </div>
+                    <group>
+                        <group string="Core Configuration">
+                            <field name="mode"/>
+                            <field name="active_tags_count"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Health &amp; Status">
+                            <field name="last_heartbeat"/>
+                            <field name="version"/>
+                            <field name="host_os"/>
+                            <field name="buffer_queue_size"/>
+                        </group>
+                    </group>
+                    <group string="Authentication Credentials (IEC 62443 FR1)" groups="scada_plc_connector.group_scada_admin">
+                        <field name="api_key_display" widget="CopyClipboardChar" readonly="1" placeholder="Click 'Generate / Rotate API Key' above"/>
+                    </group>
+                    <notebook>
+                        <page string="Attached Connections" name="connections">
+                            <field name="connection_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="protocol"/>
+                                    <field name="host"/>
+                                    <field name="port"/>
+                                    <field name="state" widget="badge" decoration-success="state == 'online'" decoration-danger="state == 'error'"/>
+                                    <field name="latency_ms"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Gateway Logs" name="logs">
+                            <field name="log_ids">
+                                <list decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+                                    <field name="timestamp"/>
+                                    <field name="log_type"/>
+                                    <field name="level"/>
+                                    <field name="message"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 2. CONNECTION VIEWS                                               -->
+    <!-- ================================================================= -->
+    <record id="view_scada_connection_tree" model="ir.ui.view">
+        <field name="name">scada.connection.tree</field>
+        <field name="model">scada.connection</field>
+        <field name="arch" type="xml">
+            <list string="PLC &amp; SCADA Connections" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'">
+                <field name="name"/>
+                <field name="protocol"/>
+                <field name="host"/>
+                <field name="port"/>
+                <field name="gateway_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'"/>
+                <field name="latency_ms"/>
+                <field name="last_seen"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_connection_form" model="ir.ui.view">
+        <field name="name">scada.connection.form</field>
+        <field name="model">scada.connection</field>
+        <field name="arch" type="xml">
+            <form string="PLC Machine Connection">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object" class="btn-success" icon="fa-bolt"/>
+                    <field name="state" widget="statusbar" statusbar_visible="online,offline,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Connection Name"/>
+                        <h1><field name="name" placeholder="e.g. Siemens S7-1200 PLC CNC Machine 1"/></h1>
+                        <span class="text-muted"><field name="code"/></span>
+                    </div>
+                    <group>
+                        <group string="Protocol &amp; Network">
+                            <field name="protocol"/>
+                            <field name="host"/>
+                            <field name="port"/>
+                            <field name="gateway_id"/>
+                        </group>
+                        <group string="Polling &amp; Timing Parameters">
+                            <field name="poll_interval_default"/>
+                            <field name="timeout"/>
+                            <field name="retry_count"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Protocol-Specific Parameters">
+                        <group invisible="protocol != 'modbus_tcp'">
+                            <field name="unit_id"/>
+                        </group>
+                        <group invisible="protocol != 's7'">
+                            <field name="s7_rack"/>
+                            <field name="s7_slot"/>
+                        </group>
+                        <group invisible="protocol != 'mqtt'">
+                            <field name="mqtt_topic_prefix"/>
+                        </group>
+                    </group>
+                    <group string="Real-time Status &amp; Diagnostics" col="4">
+                        <field name="latency_ms" readonly="1"/>
+                        <field name="last_seen" readonly="1"/>
+                        <field name="error_count" readonly="1"/>
+                        <field name="last_error_message" readonly="1" invisible="not last_error_message"/>
+                    </group>
+                    <notebook>
+                        <page string="Tag Register List" name="tags">
+                            <field name="tag_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="address"/>
+                                    <field name="data_type"/>
+                                    <field name="unit"/>
+                                    <field name="mode"/>
+                                    <field name="last_value"/>
+                                    <field name="last_quality" widget="badge" decoration-success="last_quality == 'good'" decoration-danger="last_quality == 'bad'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Related Devices" name="devices">
+                            <field name="device_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="state" widget="badge"/>
+                                    <field name="workcenter_id"/>
+                                    <field name="equipment_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 3. DEVICE VIEWS                                                   -->
+    <!-- ================================================================= -->
+    <record id="view_scada_device_tree" model="ir.ui.view">
+        <field name="name">scada.device.tree</field>
+        <field name="model">scada.device</field>
+        <field name="arch" type="xml">
+            <list string="Devices / Machines">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="connection_id"/>
+                <field name="state" widget="badge" decoration-success="state == 'running'" decoration-warning="state == 'idle'" decoration-danger="state == 'fault'" decoration-muted="state == 'stopped'"/>
+                <field name="workcenter_id"/>
+                <field name="equipment_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_device_form" model="ir.ui.view">
+        <field name="name">scada.device.form</field>
+        <field name="model">scada.device</field>
+        <field name="arch" type="xml">
+            <form string="Plant Machine Device">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="running,idle,stopped,fault"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Machine Name"/>
+                        <h1><field name="name" placeholder="e.g. 5-Axis CNC Wood Router Machine 01"/></h1>
+                        <span class="text-muted"><field name="code" placeholder="Asset Code / Serial Number"/></span>
+                    </div>
+                    <group>
+                        <group string="Connectivity">
+                            <field name="connection_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="ERP Mapping (Odoo Bridges)">
+                            <field name="workcenter_id"/>
+                            <field name="equipment_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Machine Tags" name="tags">
+                            <field name="tag_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="address"/>
+                                    <field name="last_value"/>
+                                    <field name="unit"/>
+                                    <field name="last_quality" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Active Alarms" name="alarms">
+                            <field name="alarm_ids">
+                                <list decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
+                                    <field name="triggered_at"/>
+                                    <field name="name"/>
+                                    <field name="severity" widget="badge"/>
+                                    <field name="trigger_value"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 4. TAG VIEWS                                                      -->
+    <!-- ================================================================= -->
+    <record id="view_scada_tag_tree" model="ir.ui.view">
+        <field name="name">scada.tag.tree</field>
+        <field name="model">scada.tag</field>
+        <field name="arch" type="xml">
+            <list string="PLC Telemetry Tags">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="connection_id"/>
+                <field name="device_id"/>
+                <field name="address"/>
+                <field name="data_type"/>
+                <field name="last_value"/>
+                <field name="unit"/>
+                <field name="last_quality" widget="badge" decoration-success="last_quality == 'good'" decoration-danger="last_quality == 'bad'"/>
+                <field name="mode"/>
+                <field name="is_writable"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_tag_form" model="ir.ui.view">
+        <field name="name">scada.tag.form</field>
+        <field name="model">scada.tag</field>
+        <field name="arch" type="xml">
+            <form string="PLC Tag Definition">
+                <header>
+                    <button name="action_read_now" string="Read Now" type="object" class="btn-info" icon="fa-refresh"/>
+                    <button name="%(action_scada_tag_write_wizard)d" string="Write to PLC" type="action" class="btn-warning" icon="fa-pencil" invisible="not is_writable"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Tag Name"/>
+                        <h1><field name="name" placeholder="e.g. Main Motor Bearing Temperature"/></h1>
+                        <span class="text-muted"><field name="code" placeholder="Unique Tag Code"/></span>
+                    </div>
+                    <group>
+                        <group string="PLC Register Location">
+                            <field name="connection_id"/>
+                            <field name="device_id"/>
+                            <field name="address"/>
+                            <field name="data_type"/>
+                            <field name="unit"/>
+                            <field name="mode"/>
+                        </group>
+                        <group string="Current Value (Live Telemetry)">
+                            <field name="last_value" readonly="1"/>
+                            <field name="last_quality" widget="badge" readonly="1"/>
+                            <field name="last_updated" readonly="1"/>
+                            <field name="poll_interval"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Transformation &amp; Recording" name="transform">
+                            <group>
+                                <group string="Value Transformation (Formula)">
+                                    <field name="scale"/>
+                                    <field name="offset"/>
+                                    <field name="formula" placeholder="value * 0.1"/>
+                                </group>
+                                <group string="Historian Storage Strategy">
+                                    <field name="record_strategy"/>
+                                    <field name="deadband_value" invisible="record_strategy != 'deadband'"/>
+                                    <field name="retention_days"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="PLC Write Control (IEC 62443)" name="security_write">
+                            <group>
+                                <group string="Write Permission">
+                                    <field name="is_writable"/>
+                                    <field name="require_two_step_approval" invisible="not is_writable"/>
+                                </group>
+                                <group string="Safe Value Bounds (Safety Clamp)">
+                                    <field name="min_write_value" invisible="not is_writable"/>
+                                    <field name="max_write_value" invisible="not is_writable"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Recent Value History" name="history">
+                            <field name="value_ids" limit="20">
+                                <list>
+                                    <field name="timestamp"/>
+                                    <field name="value_str"/>
+                                    <field name="quality" widget="badge"/>
+                                    <field name="received_at"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 5. RULE &amp; ALARM VIEWS                                         -->
+    <!-- ================================================================= -->
+    <record id="view_scada_rule_tree" model="ir.ui.view">
+        <field name="name">scada.rule.tree</field>
+        <field name="model">scada.rule</field>
+        <field name="arch" type="xml">
+            <list string="Rules &amp; Alarms">
+                <field name="name"/>
+                <field name="tag_id"/>
+                <field name="operator"/>
+                <field name="threshold_value"/>
+                <field name="severity" widget="badge" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'" decoration-info="severity == 'info'"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_rule_form" model="ir.ui.view">
+        <field name="name">scada.rule.form</field>
+        <field name="model">scada.rule</field>
+        <field name="arch" type="xml">
+            <form string="PLC Threshold Rule">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Rule Name"/>
+                        <h1><field name="name" placeholder="e.g. Motor Bearing High Temperature Alarm > 85 °C"/></h1>
+                    </div>
+                    <group>
+                        <group string="Evaluation Condition">
+                            <field name="tag_id"/>
+                            <field name="operator"/>
+                            <field name="threshold_value"/>
+                            <field name="threshold_max" invisible="operator != 'range'"/>
+                            <field name="severity"/>
+                        </group>
+                        <group string="Stabilization &amp; Timing">
+                            <field name="duration_seconds"/>
+                            <field name="hysteresis"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Automated Actions" name="actions">
+                            <field name="action_ids">
+                                <list editable="bottom">
+                                    <field name="action_type"/>
+                                    <field name="maintenance_title" invisible="action_type != 'maintenance'"/>
+                                    <field name="maintenance_team_id" invisible="action_type != 'maintenance'"/>
+                                    <field name="target_tag_id" invisible="action_type != 'write_plc'"/>
+                                    <field name="write_value" invisible="action_type != 'write_plc'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_scada_alarm_tree" model="ir.ui.view">
+        <field name="name">scada.alarm.tree</field>
+        <field name="model">scada.alarm</field>
+        <field name="arch" type="xml">
+            <list string="Alarm List" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
+                <field name="triggered_at"/>
+                <field name="name"/>
+                <field name="device_id"/>
+                <field name="tag_id"/>
+                <field name="trigger_value"/>
+                <field name="severity" widget="badge"/>
+                <field name="state" widget="badge" decoration-danger="state == 'active'" decoration-warning="state == 'ack'" decoration-success="state == 'cleared'"/>
+                <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-warning btn-sm" invisible="state != 'active'"/>
+                <button name="action_clear" string="Clear" type="object" class="btn-success btn-sm" invisible="state == 'cleared'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_alarm_form" model="ir.ui.view">
+        <field name="name">scada.alarm.form</field>
+        <field name="model">scada.alarm</field>
+        <field name="arch" type="xml">
+            <form string="Machine Alarm Event">
+                <header>
+                    <button name="action_acknowledge" string="Acknowledge Alarm" type="object" class="btn-warning" invisible="state != 'active'"/>
+                    <button name="action_clear" string="Clear Alarm" type="object" class="btn-success" invisible="state == 'cleared'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="active,ack,cleared"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Alarm Name / Description"/>
+                        <h1><field name="name" placeholder="e.g. Spindle Overheat CNC-01"/></h1>
+                    </div>
+                    <group>
+                        <group string="Trigger Information">
+                            <field name="tag_id"/>
+                            <field name="device_id"/>
+                            <field name="rule_id"/>
+                            <field name="trigger_value"/>
+                            <field name="severity" widget="badge"/>
+                        </group>
+                        <group string="Timestamps &amp; Response">
+                            <field name="triggered_at" readonly="1"/>
+                            <field name="ack_at" readonly="1" invisible="not ack_at"/>
+                            <field name="ack_by" readonly="1" invisible="not ack_by"/>
+                            <field name="cleared_at" readonly="1" invisible="not cleared_at"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_scada_alarm_search" model="ir.ui.view">
+        <field name="name">scada.alarm.search</field>
+        <field name="model">scada.alarm</field>
+        <field name="arch" type="xml">
+            <search string="Search Alarms">
+                <field name="name"/>
+                <field name="device_id"/>
+                <field name="tag_id"/>
+                <field name="rule_id"/>
+                <separator/>
+                <filter name="filter_active" string="Active Alarms" domain="[('state', '=', 'active')]"/>
+                <filter name="filter_ack" string="Acknowledged" domain="[('state', '=', 'ack')]"/>
+                <filter name="filter_danger" string="Critical (Danger)" domain="[('severity', '=', 'danger')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_device" string="Machine / Device" context="{'group_by': 'device_id'}"/>
+                    <filter name="group_by_severity" string="Severity" context="{'group_by': 'severity'}"/>
+                    <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ================================================================= -->
+    <!-- 6. WRITE REQUEST &amp; AUDIT LOG VIEWS                            -->
+    <!-- ================================================================= -->
+    <record id="view_scada_write_request_tree" model="ir.ui.view">
+        <field name="name">scada.write.request.tree</field>
+        <field name="model">scada.write.request</field>
+        <field name="arch" type="xml">
+            <list string="PLC Write Command Queue" create="false" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')">
+                <field name="create_date"/>
+                <field name="tag_id"/>
+                <field name="requested_value"/>
+                <field name="origin"/>
+                <field name="executed_by"/>
+                <field name="state" widget="badge" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')" decoration-warning="state == 'pending'"/>
+                <field name="response_message"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_scada_log_tree" model="ir.ui.view">
+        <field name="name">scada.log.tree</field>
+        <field name="model">scada.log</field>
+        <field name="arch" type="xml">
+            <list string="SCADA &amp; IEC 62443 Audit Log" create="false" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+                <field name="timestamp"/>
+                <field name="log_type" widget="badge"/>
+                <field name="level" widget="badge"/>
+                <field name="message"/>
+                <field name="connection_id"/>
+                <field name="gateway_id"/>
+            </list>
+        </field>
+    </record>
+</odoo>
