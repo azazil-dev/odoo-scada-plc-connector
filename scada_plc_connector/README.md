@@ -2,15 +2,15 @@
 
 # ⚡ SCADA PLC Connector
 
-### Industrial Machine Integration, PLC & Real-time Telemetry Platform for Odoo 17 CE
+### Industrial Machine Integration, PLC & Real-time Telemetry Platform for Odoo 19 CE
 
-![Odoo](https://img.shields.io/badge/Odoo-17%20CE-875A7B?style=for-the-badge&logo=odoo&logoColor=white)
-![Version](https://img.shields.io/badge/version-17.0.1.0.0-0284C7?style=for-the-badge)
+![Odoo](https://img.shields.io/badge/Odoo-19%20CE-875A7B?style=for-the-badge&logo=odoo&logoColor=white)
+![Version](https://img.shields.io/badge/version-19.0.1.0.0-0284C7?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-LGPL--3-6B8E23?style=for-the-badge)
 ![IEC 62443](https://img.shields.io/badge/security-IEC%2062443%20Ready-E11D48?style=for-the-badge)
 ![Protocol](https://img.shields.io/badge/protocols-Modbus%20·%20OPC%20UA%20·%20S7%20·%20MQTT-0F172A?style=for-the-badge)
 
-**Turn Odoo 17 Community Edition into your factory's SCADA control center — without writing code.**
+**Turn Odoo 19 Community Edition into your factory's SCADA control center — without writing code.**
 
 [🚀 Quick Start](#-quick-start) · [🔌 Protocols](#-protocol-support) · [🏗️ Architecture](#-architecture) · [📡 REST API](#-rest-api-gateway) · [🔒 Security](#-security--iec-62443) · [🧱 Driver SDK](#-driver-sdk)
 
@@ -36,7 +36,7 @@
 
 ## 🎯 About This Module
 
-This module turns Odoo 17 CE into a **full IIoT/SCADA platform**: configure connections to PLCs and gateways from the Odoo UI, pull real-time telemetry, run a rule engine with automatic alarms, and write values back to PLCs under industrial security controls.
+This module turns Odoo 19 CE into a **full IIoT/SCADA platform**: configure connections to PLCs and gateways from the Odoo UI, pull real-time telemetry, run a rule engine with automatic alarms, and write values back to PLCs under industrial security controls.
 
 > **Data flow**: PLC / Sensor → *Edge Gateway* (or Odoo worker) → Odoo REST API → Historian + Rule Engine → MRP, Maintenance, and Audit Log.
 
@@ -78,7 +78,7 @@ flowchart LR
         GW["🌐 Edge Gateway<br/>'scada.gateway'<br/>API Key · Heartbeat · Buffer"]
     end
 
-    subgraph ODOO[" IT Zone — Odoo 17 CE "]
+    subgraph ODOO[" IT Zone — Odoo 19 CE "]
         API["⚡ REST API<br/>/scada/api/v1/*"]
         CONN["scada.connection<br/>scada.device"]
         TAG["scada.tag<br/>scada.tag.last<br/>scada.tag.value"]
@@ -110,7 +110,7 @@ flowchart LR
 ```mermaid
 sequenceDiagram
     participant E as 👷 Engineer
-    participant O as Odoo 17
+    participant O as Odoo 19
     participant G as 🌐 Gateway
     participant P as 🔌 PLC
 
@@ -211,10 +211,12 @@ curl -X POST https://odoo-factory.example.com/scada/api/v1/commands \
 ### 1. Installation
 
 ```bash
-# Copy the module to your addons path
-cp -r scada_plc_connector /path/to/odoo/addons/
+# Clone the repository (branch 19)
+git clone -b 19 https://github.com/azazil-dev/odoo-scada-plc-connector.git addons/scada_plc_connector
+# Or via SSH
+# git clone -b 19 git@github.com:azazil-dev/odoo-scada-plc-connector.git addons/scada_plc_connector
 
-# Or configure addons_path in odoo.conf
+# Configure addons_path in odoo.conf
 addons_path = /path/to/odoo/addons,/path/to/custom_addons
 ```
 
@@ -347,7 +349,7 @@ The PRD covers 60+ functional requirements prioritized P0–P2, NFR targets (thr
 
 ```
 scada_plc_connector/
-├── __manifest__.py            # Module metadata (v17.0.1.0.0, LGPL-3)
+├── __manifest__.py            # Module metadata (v19.0.1.0.0, LGPL-3)
 ├── models/
 │   ├── models.py              # 13 core SCADA models
 │   ├── scada_drivers.py       # Driver registry + built-in drivers
@@ -369,9 +371,9 @@ scada_plc_connector/
 
 **📦 Install via Apps menu** · **[🔗 REST API](#-rest-api-gateway)** · **[🧪 Start without a PLC](#-quick-start)**
 
-Made with ❤️ for the Odoo community · [NIITS](https://www.niits.id) · Author: **Arif N Ramadhan**
+Made with ❤️ for the Odoo community · [NIITS](https://www.niits.id) · [GitHub Repo (Branch 19)](https://github.com/azazil-dev/odoo-scada-plc-connector/tree/19) · Author: **Arif N Ramadhan**
 
-![Odoo 17 CE](https://img.shields.io/badge/Odoo-17%20Community%20Edition-875A7B?style=flat-square&logo=odoo&logoColor=white)
+![Odoo 19 CE](https://img.shields.io/badge/Odoo-19%20Community%20Edition-875A7B?style=flat-square&logo=odoo&logoColor=white)
 ![LGPL-3](https://img.shields.io/badge/license-LGPL--3-6B8E23?style=flat-square)
 
 </div>
