@@ -2,7 +2,7 @@
 
 # ⚡ Odoo SCADA PLC Connector
 
-### SCADA & Industrial IoT Integration Platform for **Odoo 17 Community Edition**
+### SCADA & Industrial IoT Integration Platform for **Odoo Community Edition**
 
 ![Odoo](https://img.shields.io/badge/Odoo-17%20CE-875A7B?style=for-the-badge&logo=odoo&logoColor=white)
 ![Version](https://img.shields.io/badge/version-17.0.1.0.0-0284C7?style=for-the-badge)
