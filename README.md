@@ -21,7 +21,7 @@
 
 | Folder | Description |
 |--------|-------------|
-| [`scada_plc_connector/`](scada_plc_connector/) | Odoo 17 CE module — SCADA/PLC integration platform (full application, LGPL-3) |
+| [`scada_plc_connector/`](scada_plc_connector/) | Odoo CE module — SCADA/PLC integration platform (full application, LGPL-3) |
 
 ## ⚡ At a Glance
 
