@@ -16,7 +16,7 @@
     <record id="action_scada_tag_live" model="ir.actions.act_window">
         <field name="name">Tag Live Telemetry</field>
         <field name="res_model">scada.tag</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No tags registered yet. Create a new tag or import from a CSV file.
@@ -33,7 +33,7 @@
     <record id="action_scada_device" model="ir.actions.act_window">
         <field name="name">Devices &amp; Machines</field>
         <field name="res_model">scada.device</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_scada_device"
@@ -45,7 +45,7 @@
     <record id="action_scada_alarm" model="ir.actions.act_window">
         <field name="name">Machine Alarms &amp; Warnings</field>
         <field name="res_model">scada.alarm</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="view_scada_alarm_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -73,7 +73,7 @@
     <record id="action_scada_write_request" model="ir.actions.act_window">
         <field name="name">PLC Write Command Queue</field>
         <field name="res_model">scada.write.request</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
     </record>
 
     <menuitem id="menu_scada_write_request"
@@ -85,7 +85,7 @@
     <record id="action_scada_log" model="ir.actions.act_window">
         <field name="name">Audit Log (IEC 62443)</field>
         <field name="res_model">scada.log</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
     </record>
 
     <menuitem id="menu_scada_log"
@@ -105,7 +105,7 @@
     <record id="action_scada_gateway" model="ir.actions.act_window">
         <field name="name">Edge Gateways</field>
         <field name="res_model">scada.gateway</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_scada_gateway"
@@ -117,7 +117,7 @@
     <record id="action_scada_connection" model="ir.actions.act_window">
         <field name="name">PLC Connections</field>
         <field name="res_model">scada.connection</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_scada_connection"
@@ -141,7 +141,7 @@
     <record id="action_scada_rule" model="ir.actions.act_window">
         <field name="name">Rules &amp; Automated Actions</field>
         <field name="res_model">scada.rule</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_scada_rule"
@@ -153,7 +153,7 @@
     <record id="action_scada_mapping" model="ir.actions.act_window">
         <field name="name">Tag Mapping to Odoo (MRP/Field)</field>
         <field name="res_model">scada.mapping</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_scada_mapping"

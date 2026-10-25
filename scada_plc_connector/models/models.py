@@ -347,9 +347,11 @@ class ScadaTag(models.Model):
 
     value_ids = fields.One2many('scada.tag.value', 'tag_id', string="Value History")
 
-    _sql_constraints = [
-        ('code_unique', 'unique(code, company_id)', 'Tag code must be unique per company!'),
-    ]
+    # Odoo 19: _sql_constraints is removed; use models.Constraint class attribute instead
+    _code_unique = models.Constraint(
+        'UNIQUE (code, company_id)',
+        'Tag code must be unique per company!',
+    )
 
     @api.depends('name', 'code', 'connection_id')
     def _compute_display_name(self):
@@ -433,9 +435,11 @@ class ScadaTagLast(models.Model):
     ], string="Quality", default='good', required=True)
     timestamp = fields.Datetime(string="Source Timestamp", required=True, default=fields.Datetime.now)
 
-    _sql_constraints = [
-        ('tag_id_unique', 'unique(tag_id)', 'Each tag can have only one last-value row!'),
-    ]
+    # Odoo 19: _sql_constraints is removed; use models.Constraint class attribute instead
+    _tag_id_unique = models.Constraint(
+        'UNIQUE (tag_id)',
+        'Each tag can have only one last-value row!',
+    )
 
 
 class ScadaTagValue(models.Model):
@@ -688,7 +692,7 @@ class ScadaWriteRequest(models.Model):
         ('success', 'Successfully Written to PLC'),
         ('rejected', 'Rejected (Value Bounds / Access Rights)'),
         ('failed', 'Failed / Timeout'),
-    ], string="Write Status", default='pending', tracking=True)
+    ], string="Write Status", default='pending')
 
     origin = fields.Char(string="Command Origin", default="Manual Engineer")
     executed_by = fields.Many2one('res.users', string="Executed By", default=lambda self: self.env.user)
@@ -704,8 +708,8 @@ class ScadaWriteRequest(models.Model):
         2. Tag writable flag
         3. Min/max value range bounds
         """
-        readonly_mode = self.env['ir.config_parameter'].sudo().get_param('scada.readonly_mode', False)
-        if readonly_mode:
+        readonly_mode = self.env['ir.config_parameter'].sudo().get_param('scada_plc_connector.plc_write_mode', 'enabled')
+        if readonly_mode == 'readonly':
             raise UserError(_("OT Security Alert: The SCADA system is in GLOBAL READ-ONLY mode. PLC writes are disabled."))
 
         if not tag.is_writable:

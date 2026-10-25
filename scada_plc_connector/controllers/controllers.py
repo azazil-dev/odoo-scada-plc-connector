@@ -31,14 +31,14 @@ class ScadaApiController(http.Controller):
         ], limit=1)
         return gateway
 
-    @http.route('/scada/api/v1/heartbeat', type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/scada/api/v1/heartbeat', type='json2', auth='none', methods=['POST'], csrf=False)
     def gateway_heartbeat(self, **kwargs):
         """Update gateway last heartbeat, version, host OS, and buffer size."""
         gateway = self._authenticate_gateway()
         if not gateway:
             return {'status': 'error', 'message': 'Unauthorized Gateway API Key'}
 
-        data = request.jsonrequest or {}
+        data = request.get_json_data() or {}
         gateway.write({
             'last_heartbeat': fields.Datetime.now(),
             'version': data.get('version', gateway.version),
@@ -90,7 +90,7 @@ class ScadaApiController(http.Controller):
         resp.headers['ETag'] = etag
         return resp
 
-    @http.route('/scada/api/v1/ingest', type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/scada/api/v1/ingest', type='json2', auth='none', methods=['POST'], csrf=False)
     def ingest_telemetry(self, **kwargs):
         """
         Receive a batch of tag readings, update last-value cache, append to historian,
@@ -100,7 +100,7 @@ class ScadaApiController(http.Controller):
         if not gateway:
             return {'status': 'error', 'message': 'Unauthorized'}
 
-        payload = request.jsonrequest or {}
+        payload = request.get_json_data() or {}
         readings = payload.get('readings', [])  # list of dicts: {tag_code, value, quality, timestamp}
 
         if not readings:
@@ -161,7 +161,7 @@ class ScadaApiController(http.Controller):
 
         return {'status': 'ok', 'processed': count}
 
-    @http.route('/scada/api/v1/commands', type='json', auth='none', methods=['POST'], csrf=False)
+    @http.route('/scada/api/v1/commands', type='json2', auth='none', methods=['POST'], csrf=False)
     def fetch_pending_commands(self, **kwargs):
         """Return pending write commands for this gateway and mark them as sent."""
         gateway = self._authenticate_gateway()

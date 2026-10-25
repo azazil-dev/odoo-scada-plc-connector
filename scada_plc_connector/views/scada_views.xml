@@ -39,7 +39,7 @@
         <field name="arch" type="xml">
             <form string="Confirm PLC Register Write">
                 <div class="alert alert-warning" role="alert">
-                    <i class="fa fa-exclamation-triangle me-1"/> <strong>Industrial Safety Warning:</strong> This command will directly modify the value in physical PLC memory or machine controller.
+                    <i class="fa fa-exclamation-triangle me-1" title="Industrial Safety Warning"/> <strong>Industrial Safety Warning:</strong> This command will directly modify the value in physical PLC memory or machine controller.
                 </div>
                 <group>
                     <field name="tag_id" readonly="1"/>
@@ -71,7 +71,7 @@
         <field name="name">scada.gateway.tree</field>
         <field name="model">scada.gateway</field>
         <field name="arch" type="xml">
-            <tree string="IoT &amp; SCADA Gateways" decoration-success="status == 'online'" decoration-danger="status == 'offline'" decoration-warning="status == 'warning'">
+            <list string="IoT &amp; SCADA Gateways" decoration-success="status == 'online'" decoration-danger="status == 'offline'" decoration-warning="status == 'warning'">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="mode"/>
@@ -80,7 +80,7 @@
                 <field name="last_heartbeat"/>
                 <field name="version"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -118,24 +118,24 @@
                     <notebook>
                         <page string="Attached Connections" name="connections">
                             <field name="connection_ids">
-                                <tree>
+                                <list>
                                     <field name="name"/>
                                     <field name="protocol"/>
                                     <field name="host"/>
                                     <field name="port"/>
                                     <field name="state" widget="badge" decoration-success="state == 'online'" decoration-danger="state == 'error'"/>
                                     <field name="latency_ms"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Gateway Logs" name="logs">
                             <field name="log_ids">
-                                <tree decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+                                <list decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
                                     <field name="timestamp"/>
                                     <field name="log_type"/>
                                     <field name="level"/>
                                     <field name="message"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -156,7 +156,7 @@
         <field name="name">scada.connection.tree</field>
         <field name="model">scada.connection</field>
         <field name="arch" type="xml">
-            <tree string="PLC &amp; SCADA Connections" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'">
+            <list string="PLC &amp; SCADA Connections" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'">
                 <field name="name"/>
                 <field name="protocol"/>
                 <field name="host"/>
@@ -165,7 +165,7 @@
                 <field name="state" widget="badge" decoration-success="state == 'online'" decoration-danger="state == 'error'" decoration-muted="state == 'offline'"/>
                 <field name="latency_ms"/>
                 <field name="last_seen"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -219,7 +219,7 @@
                     <notebook>
                         <page string="Tag Register List" name="tags">
                             <field name="tag_ids">
-                                <tree>
+                                <list>
                                     <field name="code"/>
                                     <field name="name"/>
                                     <field name="address"/>
@@ -228,18 +228,18 @@
                                     <field name="mode"/>
                                     <field name="last_value"/>
                                     <field name="last_quality" widget="badge" decoration-success="last_quality == 'good'" decoration-danger="last_quality == 'bad'"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Related Devices" name="devices">
                             <field name="device_ids">
-                                <tree>
+                                <list>
                                     <field name="code"/>
                                     <field name="name"/>
                                     <field name="state" widget="badge"/>
                                     <field name="workcenter_id"/>
                                     <field name="equipment_id"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -260,14 +260,14 @@
         <field name="name">scada.device.tree</field>
         <field name="model">scada.device</field>
         <field name="arch" type="xml">
-            <tree string="Devices / Machines">
+            <list string="Devices / Machines">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="connection_id"/>
                 <field name="state" widget="badge" decoration-success="state == 'running'" decoration-warning="state == 'idle'" decoration-danger="state == 'fault'" decoration-muted="state == 'stopped'"/>
                 <field name="workcenter_id"/>
                 <field name="equipment_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -298,25 +298,25 @@
                     <notebook>
                         <page string="Machine Tags" name="tags">
                             <field name="tag_ids">
-                                <tree>
+                                <list>
                                     <field name="code"/>
                                     <field name="name"/>
                                     <field name="address"/>
                                     <field name="last_value"/>
                                     <field name="unit"/>
                                     <field name="last_quality" widget="badge"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Active Alarms" name="alarms">
                             <field name="alarm_ids">
-                                <tree decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
+                                <list decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
                                     <field name="triggered_at"/>
                                     <field name="name"/>
                                     <field name="severity" widget="badge"/>
                                     <field name="trigger_value"/>
                                     <field name="state" widget="badge"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -332,7 +332,7 @@
         <field name="name">scada.tag.tree</field>
         <field name="model">scada.tag</field>
         <field name="arch" type="xml">
-            <tree string="PLC Telemetry Tags">
+            <list string="PLC Telemetry Tags">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="connection_id"/>
@@ -344,7 +344,7 @@
                 <field name="last_quality" widget="badge" decoration-success="last_quality == 'good'" decoration-danger="last_quality == 'bad'"/>
                 <field name="mode"/>
                 <field name="is_writable"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -408,12 +408,12 @@
                         </page>
                         <page string="Recent Value History" name="history">
                             <field name="value_ids" limit="20">
-                                <tree>
+                                <list>
                                     <field name="timestamp"/>
                                     <field name="value_str"/>
                                     <field name="quality" widget="badge"/>
                                     <field name="received_at"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -429,14 +429,14 @@
         <field name="name">scada.rule.tree</field>
         <field name="model">scada.rule</field>
         <field name="arch" type="xml">
-            <tree string="Rules &amp; Alarms">
+            <list string="Rules &amp; Alarms">
                 <field name="name"/>
                 <field name="tag_id"/>
                 <field name="operator"/>
                 <field name="threshold_value"/>
                 <field name="severity" widget="badge" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'" decoration-info="severity == 'info'"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -468,13 +468,13 @@
                     <notebook>
                         <page string="Automated Actions" name="actions">
                             <field name="action_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="action_type"/>
                                     <field name="maintenance_title" invisible="action_type != 'maintenance'"/>
                                     <field name="maintenance_team_id" invisible="action_type != 'maintenance'"/>
                                     <field name="target_tag_id" invisible="action_type != 'write_plc'"/>
                                     <field name="write_value" invisible="action_type != 'write_plc'"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -487,7 +487,7 @@
         <field name="name">scada.alarm.tree</field>
         <field name="model">scada.alarm</field>
         <field name="arch" type="xml">
-            <tree string="Alarm List" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
+            <list string="Alarm List" decoration-danger="severity == 'danger'" decoration-warning="severity == 'warning'">
                 <field name="triggered_at"/>
                 <field name="name"/>
                 <field name="device_id"/>
@@ -497,7 +497,7 @@
                 <field name="state" widget="badge" decoration-danger="state == 'active'" decoration-warning="state == 'ack'" decoration-success="state == 'cleared'"/>
                 <button name="action_acknowledge" string="Acknowledge" type="object" class="btn-warning btn-sm" invisible="state != 'active'"/>
                 <button name="action_clear" string="Clear" type="object" class="btn-success btn-sm" invisible="state == 'cleared'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -545,11 +545,11 @@
                 <field name="device_id"/>
                 <field name="tag_id"/>
                 <field name="rule_id"/>
-                <separator/>
+
                 <filter name="filter_active" string="Active Alarms" domain="[('state', '=', 'active')]"/>
                 <filter name="filter_ack" string="Acknowledged" domain="[('state', '=', 'ack')]"/>
                 <filter name="filter_danger" string="Critical (Danger)" domain="[('severity', '=', 'danger')]"/>
-                <group expand="0" string="Group By">
+                <group name="group_by">
                     <filter name="group_by_device" string="Machine / Device" context="{'group_by': 'device_id'}"/>
                     <filter name="group_by_severity" string="Severity" context="{'group_by': 'severity'}"/>
                     <filter name="group_by_state" string="State" context="{'group_by': 'state'}"/>
@@ -565,7 +565,7 @@
         <field name="name">scada.write.request.tree</field>
         <field name="model">scada.write.request</field>
         <field name="arch" type="xml">
-            <tree string="PLC Write Command Queue" create="false" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')">
+            <list string="PLC Write Command Queue" create="false" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')">
                 <field name="create_date"/>
                 <field name="tag_id"/>
                 <field name="requested_value"/>
@@ -573,7 +573,7 @@
                 <field name="executed_by"/>
                 <field name="state" widget="badge" decoration-success="state == 'success'" decoration-danger="state in ('failed', 'rejected')" decoration-warning="state == 'pending'"/>
                 <field name="response_message"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -581,14 +581,14 @@
         <field name="name">scada.log.tree</field>
         <field name="model">scada.log</field>
         <field name="arch" type="xml">
-            <tree string="SCADA &amp; IEC 62443 Audit Log" create="false" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+            <list string="SCADA &amp; IEC 62443 Audit Log" create="false" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
                 <field name="timestamp"/>
                 <field name="log_type" widget="badge"/>
                 <field name="level" widget="badge"/>
                 <field name="message"/>
                 <field name="connection_id"/>
                 <field name="gateway_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 </odoo>

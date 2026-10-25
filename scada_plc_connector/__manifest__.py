@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 {
     'name': "SCADA PLC Connector",
-    'summary': "Industrial Machine Integration Platform, PLC, IoT Gateway & Real-time Telemetry for Odoo 17 CE",
+    'summary': "Industrial Machine Integration Platform, PLC, IoT Gateway & Real-time Telemetry for Odoo 19 CE",
     'description': """
-SCADA PLC Connector for Odoo 17 Community Edition
+SCADA PLC Connector for Odoo 19 Community Edition
 ===================================================
-Turns Odoo 17 CE into a central configuration hub and data consumer for factory machines.
+Turns Odoo 19 CE into a central configuration hub and data consumer for factory machines.
 Supports industrial protocols (Modbus TCP, OPC UA, Siemens S7, MQTT, EtherNet/IP)
 without coding through the Odoo UI.
 
@@ -22,7 +22,7 @@ Key Features:
     'author': "Arif N Ramadhan",
     'website': "https://www.niits.id",
     'category': 'Manufacturing/IoT',
-    'version': '17.0.1.0.0',
+    'version': '19.0.1.0.0',
     'license': 'LGPL-3',
     'depends': ['base', 'mail', 'mrp', 'maintenance'],
     'data': [

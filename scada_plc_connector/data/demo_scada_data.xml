@@ -7,7 +7,7 @@
             <field name="code">GW-PLANT-01</field>
             <field name="mode">embedded</field>
             <field name="status">online</field>
-            <field name="last_heartbeat" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="last_heartbeat" eval="DateTime.now()"/>
             <field name="version">1.0.0-ce</field>
             <field name="host_os">Linux Ubuntu 22.04 LTS (x86_64)</field>
             <field name="buffer_queue_size">0</field>
@@ -23,7 +23,7 @@
             <field name="host">127.0.0.1</field>
             <field name="port">502</field>
             <field name="state">online</field>
-            <field name="last_seen" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="last_seen" eval="DateTime.now()"/>
             <field name="latency_ms">1.2</field>
             <field name="poll_interval_default">1.0</field>
         </record>
@@ -37,7 +37,7 @@
             <field name="port">502</field>
             <field name="unit_id">1</field>
             <field name="state">online</field>
-            <field name="last_seen" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="last_seen" eval="DateTime.now()"/>
             <field name="latency_ms">4.5</field>
             <field name="poll_interval_default">2.0</field>
         </record>
@@ -127,7 +127,7 @@
             <field name="value_str">82.4</field>
             <field name="value_num">82.4</field>
             <field name="quality">good</field>
-            <field name="timestamp" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="timestamp" eval="DateTime.now()"/>
         </record>
 
         <record id="demo_last_spindle_rpm" model="scada.tag.last">
@@ -135,7 +135,7 @@
             <field name="value_str">1480.0</field>
             <field name="value_num">1480.0</field>
             <field name="quality">good</field>
-            <field name="timestamp" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="timestamp" eval="DateTime.now()"/>
         </record>
 
         <record id="demo_last_prod_counter" model="scada.tag.last">
@@ -143,7 +143,7 @@
             <field name="value_str">342</field>
             <field name="value_num">342.0</field>
             <field name="quality">good</field>
-            <field name="timestamp" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="timestamp" eval="DateTime.now()"/>
         </record>
 
         <record id="demo_last_kiln_temp" model="scada.tag.last">
@@ -151,7 +151,7 @@
             <field name="value_str">68.5</field>
             <field name="value_num">68.5</field>
             <field name="quality">good</field>
-            <field name="timestamp" eval="datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+            <field name="timestamp" eval="DateTime.now()"/>
         </record>
 
         <!-- 6. Automated Rules & Alarms -->

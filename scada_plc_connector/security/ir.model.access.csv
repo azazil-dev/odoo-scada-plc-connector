@@ -1,68 +1,68 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_scada_gateway_viewer,scada.gateway.viewer,model_scada_gateway,group_scada_viewer,1,0,0,0
-access_scada_gateway_user,scada.gateway.user,model_scada_gateway,group_scada_user,1,0,0,0
-access_scada_gateway_engineer,scada.gateway.engineer,model_scada_gateway,group_scada_engineer,1,1,1,0
-access_scada_gateway_admin,scada.gateway.admin,model_scada_gateway,group_scada_admin,1,1,1,1
+access_scada_gateway_viewer,scada.gateway.viewer,model_scada_gateway,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_gateway_user,scada.gateway.user,model_scada_gateway,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_gateway_engineer,scada.gateway.engineer,model_scada_gateway,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_gateway_admin,scada.gateway.admin,model_scada_gateway,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_connection_viewer,scada.connection.viewer,model_scada_connection,group_scada_viewer,1,0,0,0
-access_scada_connection_user,scada.connection.user,model_scada_connection,group_scada_user,1,0,0,0
-access_scada_connection_engineer,scada.connection.engineer,model_scada_connection,group_scada_engineer,1,1,1,1
-access_scada_connection_admin,scada.connection.admin,model_scada_connection,group_scada_admin,1,1,1,1
+access_scada_connection_viewer,scada.connection.viewer,model_scada_connection,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_connection_user,scada.connection.user,model_scada_connection,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_connection_engineer,scada.connection.engineer,model_scada_connection,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_connection_admin,scada.connection.admin,model_scada_connection,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_device_viewer,scada.device.viewer,model_scada_device,group_scada_viewer,1,0,0,0
-access_scada_device_user,scada.device.user,model_scada_device,group_scada_user,1,0,0,0
-access_scada_device_engineer,scada.device.engineer,model_scada_device,group_scada_engineer,1,1,1,1
-access_scada_device_admin,scada.device.admin,model_scada_device,group_scada_admin,1,1,1,1
+access_scada_device_viewer,scada.device.viewer,model_scada_device,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_device_user,scada.device.user,model_scada_device,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_device_engineer,scada.device.engineer,model_scada_device,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_device_admin,scada.device.admin,model_scada_device,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_tag_viewer,scada.tag.viewer,model_scada_tag,group_scada_viewer,1,0,0,0
-access_scada_tag_user,scada.tag.user,model_scada_tag,group_scada_user,1,0,0,0
-access_scada_tag_engineer,scada.tag.engineer,model_scada_tag,group_scada_engineer,1,1,1,1
-access_scada_tag_admin,scada.tag.admin,model_scada_tag,group_scada_admin,1,1,1,1
+access_scada_tag_viewer,scada.tag.viewer,model_scada_tag,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_tag_user,scada.tag.user,model_scada_tag,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_tag_engineer,scada.tag.engineer,model_scada_tag,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_tag_admin,scada.tag.admin,model_scada_tag,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_tag_last_viewer,scada.tag.last.viewer,model_scada_tag_last,group_scada_viewer,1,0,0,0
-access_scada_tag_last_user,scada.tag.last.user,model_scada_tag_last,group_scada_user,1,0,0,0
-access_scada_tag_last_engineer,scada.tag.last.engineer,model_scada_tag_last,group_scada_engineer,1,1,1,0
-access_scada_tag_last_admin,scada.tag.last.admin,model_scada_tag_last,group_scada_admin,1,1,1,1
+access_scada_tag_last_viewer,scada.tag.last.viewer,model_scada_tag_last,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_tag_last_user,scada.tag.last.user,model_scada_tag_last,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_tag_last_engineer,scada.tag.last.engineer,model_scada_tag_last,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_tag_last_admin,scada.tag.last.admin,model_scada_tag_last,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_tag_value_viewer,scada.tag.value.viewer,model_scada_tag_value,group_scada_viewer,1,0,0,0
-access_scada_tag_value_user,scada.tag.value.user,model_scada_tag_value,group_scada_user,1,0,0,0
-access_scada_tag_value_engineer,scada.tag.value.engineer,model_scada_tag_value,group_scada_engineer,1,1,1,0
-access_scada_tag_value_admin,scada.tag.value.admin,model_scada_tag_value,group_scada_admin,1,1,1,1
+access_scada_tag_value_viewer,scada.tag.value.viewer,model_scada_tag_value,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_tag_value_user,scada.tag.value.user,model_scada_tag_value,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_tag_value_engineer,scada.tag.value.engineer,model_scada_tag_value,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_tag_value_admin,scada.tag.value.admin,model_scada_tag_value,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_tag_aggregate_viewer,scada.tag.aggregate.viewer,model_scada_tag_aggregate,group_scada_viewer,1,0,0,0
-access_scada_tag_aggregate_user,scada.tag.aggregate.user,model_scada_tag_aggregate,group_scada_user,1,0,0,0
-access_scada_tag_aggregate_engineer,scada.tag.aggregate.engineer,model_scada_tag_aggregate,group_scada_engineer,1,1,1,0
-access_scada_tag_aggregate_admin,scada.tag.aggregate.admin,model_scada_tag_aggregate,group_scada_admin,1,1,1,1
+access_scada_tag_aggregate_viewer,scada.tag.aggregate.viewer,model_scada_tag_aggregate,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_tag_aggregate_user,scada.tag.aggregate.user,model_scada_tag_aggregate,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_tag_aggregate_engineer,scada.tag.aggregate.engineer,model_scada_tag_aggregate,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_tag_aggregate_admin,scada.tag.aggregate.admin,model_scada_tag_aggregate,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_rule_viewer,scada.rule.viewer,model_scada_rule,group_scada_viewer,1,0,0,0
-access_scada_rule_user,scada.rule.user,model_scada_rule,group_scada_user,1,0,0,0
-access_scada_rule_engineer,scada.rule.engineer,model_scada_rule,group_scada_engineer,1,1,1,1
-access_scada_rule_admin,scada.rule.admin,model_scada_rule,group_scada_admin,1,1,1,1
+access_scada_rule_viewer,scada.rule.viewer,model_scada_rule,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_rule_user,scada.rule.user,model_scada_rule,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_rule_engineer,scada.rule.engineer,model_scada_rule,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_rule_admin,scada.rule.admin,model_scada_rule,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_action_viewer,scada.action.viewer,model_scada_action,group_scada_viewer,1,0,0,0
-access_scada_action_user,scada.action.user,model_scada_action,group_scada_user,1,0,0,0
-access_scada_action_engineer,scada.action.engineer,model_scada_action,group_scada_engineer,1,1,1,1
-access_scada_action_admin,scada.action.admin,model_scada_action,group_scada_admin,1,1,1,1
+access_scada_action_viewer,scada.action.viewer,model_scada_action,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_action_user,scada.action.user,model_scada_action,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_action_engineer,scada.action.engineer,model_scada_action,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_action_admin,scada.action.admin,model_scada_action,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_mapping_viewer,scada.mapping.viewer,model_scada_mapping,group_scada_viewer,1,0,0,0
-access_scada_mapping_user,scada.mapping.user,model_scada_mapping,group_scada_user,1,0,0,0
-access_scada_mapping_engineer,scada.mapping.engineer,model_scada_mapping,group_scada_engineer,1,1,1,1
-access_scada_mapping_admin,scada.mapping.admin,model_scada_mapping,group_scada_admin,1,1,1,1
+access_scada_mapping_viewer,scada.mapping.viewer,model_scada_mapping,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_mapping_user,scada.mapping.user,model_scada_mapping,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_mapping_engineer,scada.mapping.engineer,model_scada_mapping,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_mapping_admin,scada.mapping.admin,model_scada_mapping,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_alarm_viewer,scada.alarm.viewer,model_scada_alarm,group_scada_viewer,1,0,0,0
-access_scada_alarm_user,scada.alarm.user,model_scada_alarm,group_scada_user,1,1,0,0
-access_scada_alarm_engineer,scada.alarm.engineer,model_scada_alarm,group_scada_engineer,1,1,1,0
-access_scada_alarm_admin,scada.alarm.admin,model_scada_alarm,group_scada_admin,1,1,1,1
+access_scada_alarm_viewer,scada.alarm.viewer,model_scada_alarm,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_alarm_user,scada.alarm.user,model_scada_alarm,scada_plc_connector.group_scada_user,1,1,0,0
+access_scada_alarm_engineer,scada.alarm.engineer,model_scada_alarm,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_alarm_admin,scada.alarm.admin,model_scada_alarm,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_write_request_viewer,scada.write.request.viewer,model_scada_write_request,group_scada_viewer,1,0,0,0
-access_scada_write_request_user,scada.write.request.user,model_scada_write_request,group_scada_user,1,0,0,0
-access_scada_write_request_engineer,scada.write.request.engineer,model_scada_write_request,group_scada_engineer,1,1,1,0
-access_scada_write_request_admin,scada.write.request.admin,model_scada_write_request,group_scada_admin,1,1,1,1
+access_scada_write_request_viewer,scada.write.request.viewer,model_scada_write_request,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_write_request_user,scada.write.request.user,model_scada_write_request,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_write_request_engineer,scada.write.request.engineer,model_scada_write_request,scada_plc_connector.group_scada_engineer,1,1,1,0
+access_scada_write_request_admin,scada.write.request.admin,model_scada_write_request,scada_plc_connector.group_scada_admin,1,1,1,1
 
-access_scada_log_viewer,scada.log.viewer,model_scada_log,group_scada_viewer,1,0,0,0
-access_scada_log_user,scada.log.user,model_scada_log,group_scada_user,1,0,0,0
-access_scada_log_engineer,scada.log.engineer,model_scada_log,group_scada_engineer,1,0,0,0
-access_scada_log_admin,scada.log.admin,model_scada_log,group_scada_admin,1,0,0,1
+access_scada_log_viewer,scada.log.viewer,model_scada_log,scada_plc_connector.group_scada_viewer,1,0,0,0
+access_scada_log_user,scada.log.user,model_scada_log,scada_plc_connector.group_scada_user,1,0,0,0
+access_scada_log_engineer,scada.log.engineer,model_scada_log,scada_plc_connector.group_scada_engineer,1,0,0,0
+access_scada_log_admin,scada.log.admin,model_scada_log,scada_plc_connector.group_scada_admin,1,0,0,1
 
-access_scada_tag_import_wizard,scada.tag.import.wizard,model_scada_tag_import_wizard,group_scada_engineer,1,1,1,1
-access_scada_tag_write_wizard,scada.tag.write.wizard,model_scada_tag_write_wizard,group_scada_engineer,1,1,1,1
+access_scada_tag_import_wizard,scada.tag.import.wizard,model_scada_tag_import_wizard,scada_plc_connector.group_scada_engineer,1,1,1,1
+access_scada_tag_write_wizard,scada.tag.write.wizard,model_scada_tag_write_wizard,scada_plc_connector.group_scada_engineer,1,1,1,1
